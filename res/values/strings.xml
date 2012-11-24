@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">MyTurtleController</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    
+    
+    <string name="btn_walk">Walk</string>
+    <string name="btn_bike">Bike</string>
+    <string name="btn_public_transport">Public transport</string>
+    <string name="btn_car">Car</string>
+    
+    <string name="btn_next_pane">Show next pane</string>
+</resources>
