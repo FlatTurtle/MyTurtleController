@@ -69,7 +69,7 @@ public class MainActivity extends Activity {
 		ArrayList<MainButton> btns = new ArrayList<MainButton>();
 		
 		ImageView icon = new ImageView(this);
-		icon.setImageResource(R.drawable.icon_bike);
+		icon.setImageResource(R.drawable.icon_walk);
 		btns.add(new MainButton(icon, "btnWalk", "Walk", 1));
 		
 		icon = new ImageView(this);
@@ -88,7 +88,8 @@ public class MainActivity extends Activity {
 		for (MainButton btn : btns) {
 			// Make layout for button
 			RelativeLayout btnContainer = new RelativeLayout(this);
-			btnContainer.setPadding(0, 0, 20, 0);
+			if(count != btns.size()-1)
+				btnContainer.setPadding(0, 0, 20, 0);
 			RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
 			btnContainer.setLayoutParams(layoutParams);
 			
