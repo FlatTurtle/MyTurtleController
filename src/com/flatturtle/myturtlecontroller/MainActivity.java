@@ -131,7 +131,7 @@ public class MainActivity extends Activity {
 			newButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Log.i("d", v.getTag().toString());
+					Log.i("Log", v.getTag().toString());
 				}
 			});
 			
