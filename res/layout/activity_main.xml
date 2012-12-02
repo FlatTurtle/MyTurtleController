@@ -15,34 +15,40 @@
     <RelativeLayout
         android:id="@+id/containerHeader"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+        android:layout_height="120dp" >
 
         <View
             android:id="@+id/background_header"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="match_parent"
             android:background="#fff" />
 
-        <ImageView
-            android:id="@+id/imageView1"
+        <LinearLayout
+            android:id="@+id/btnSwitchPane"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="28dp"
-            android:src="@android:drawable/ic_media_play" />
+            android:padding="28dp" >
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@+id/imageView1"
-            android:text="@string/btn_next_pane"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="#2357a6" />
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="10dp"
+                android:text="@string/btn_next_pane"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#2357a6" />
 
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@android:drawable/ic_media_play" />
+
+        </LinearLayout>
     </RelativeLayout>
 
     <ImageView
