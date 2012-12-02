@@ -57,7 +57,7 @@
         tools:ignore="ContentDescription" />
 
     <HorizontalScrollView
-        android:id="@+id/buttonScrollView"
+        android:id="@+id/viewStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -76,5 +76,147 @@
             tools:ignore="ScrollViewSize" >
         </LinearLayout>
     </HorizontalScrollView>
+
+    <ScrollView
+        android:id="@+id/viewLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/containerHeader"
+        android:fadingEdge="horizontal|vertical"
+        android:paddingBottom="26dp"
+        android:paddingTop="26dp"
+        android:scrollbars="horizontal|vertical" >
+
+        <RelativeLayout
+            android:id="@+id/containerLocation"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="-40dp" >
+
+            <TextView
+                android:id="@+id/lblMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:gravity="right"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#2357a6"
+                android:textSize="35sp" />
+
+            <EditText
+                android:id="@+id/txtFrom"
+                android:layout_width="wrap_content"
+                android:layout_height="70dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="230dp"
+                android:layout_marginRight="180dp"
+                android:layout_marginTop="60dp"
+                android:ems="10"
+                android:textSize="26sp" />
+
+            <TextView
+                android:id="@+id/lblFrom"
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/txtFrom"
+                android:layout_alignBottom="@+id/txtFrom"
+                android:layout_marginLeft="40dp"
+                android:gravity="right"
+                android:text="@string/from"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#2357a6"
+                android:textSize="26sp" />
+
+            <EditText
+                android:id="@+id/txtTo"
+                android:layout_width="wrap_content"
+                android:layout_height="70dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/txtFrom"
+                android:layout_marginLeft="230dp"
+                android:layout_marginRight="180dp"
+                android:layout_marginTop="15dp"
+                android:ems="10"
+                android:textSize="26sp" >
+
+                <requestFocus />
+            </EditText>
+
+            <TextView
+                android:id="@+id/lblTo"
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/txtTo"
+                android:layout_alignBottom="@+id/txtTo"
+                android:layout_marginLeft="40dp"
+                android:gravity="right"
+                android:text="@string/to"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#2357a6"
+                android:textSize="26sp" />
+
+            <RelativeLayout
+                android:id="@+id/btnGo"
+                android:layout_width="100dp"
+                android:layout_height="150dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@id/txtFrom"
+                android:layout_marginRight="63dp" >
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:background="#2357a5" />
+
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="false"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/go"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="#fff"
+                    android:textSize="40sp" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnBack"
+                android:layout_width="100dp"
+                android:layout_height="150dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="false"
+                android:layout_alignTop="@id/txtFrom" >
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:background="#fff" />
+
+                <TextView
+                    android:id="@+id/TextView01"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:text="&lt;"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="#2357a5"
+                    android:textSize="80sp" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </ScrollView>
 
 </RelativeLayout>

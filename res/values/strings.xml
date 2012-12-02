@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <!-- OTP API modes -->
+    <string name="otp_mode_walk">WALK</string>
+    <string name="otp_mode_bike">BICYCLE</string>
+    <string name="otp_mode_transit">TRANSIT</string>
+    <string name="otp_mode_car">CAR</string>
+    
     <string name="app_name">MyTurtleController</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="menu_settings">Settings</string>
-    
-    
+ 
     <string name="btn_walk">Walk</string>
     <string name="btn_bike">Bike</string>
     <string name="btn_public_transport">Public transport</string>
     <string name="btn_car">Car</string>
     
     <string name="btn_next_pane">Show next pane</string>
+    
+    <string name="from">From</string>
+    <string name="to">To</string>
+    <string name="go">Go</string>
 </resources>
