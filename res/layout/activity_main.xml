@@ -2,7 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity" >
+    tools:context=".MainActivity"
+    android:id = "@+id/activityRoot"
+    android:windowSoftInputMode="adjustResize"  >
 
     <View
         android:id="@+id/background"
@@ -222,6 +224,160 @@
             </RelativeLayout>
 
         </RelativeLayout>
+
+    </ScrollView>
+
+    <ScrollView
+        android:id="@+id/viewSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/containerHeader" >
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="26dp"
+            android:paddingRight="26dp"
+            android:paddingTop="60dp" >
+
+            <TableRow
+                android:id="@+id/tableRow4"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="25dp" >
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal" >
+
+                    <TextView
+                        android:id="@+id/TextView02"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="right"
+                        android:text="@string/settings"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="#2357a6"
+                        android:textSize="36sp" />
+
+                </RelativeLayout>
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="20dp" >
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        android:id="@+id/lblPin"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBaseline="@+id/txtPin"
+                        android:layout_marginLeft="100dp"
+                        android:layout_marginRight="20dp"
+                        android:gravity="right"
+                        android:text="@string/pin"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="#2357a6"
+                        android:textSize="26sp" />
+
+                    <EditText
+                        android:id="@+id/txtPin"
+                        android:layout_width="330dp"
+                        android:layout_height="70dp"
+                        android:layout_toRightOf="@id/lblPin"
+                        android:ems="10"
+                        android:textSize="26sp" />
+
+                </RelativeLayout>
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        android:id="@+id/lblPass"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBaseline="@+id/txtPass"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="100dp"
+                        android:layout_marginRight="20dp"
+                        android:gravity="right"
+                        android:text="@string/admin_pass"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="#2357a6"
+                        android:textSize="26sp" />
+
+                    <EditText
+                        android:id="@+id/txtPass"
+                        android:layout_width="330dp"
+                        android:layout_height="70dp"
+                        android:layout_alignParentLeft="false"
+                        android:layout_toRightOf="@id/lblPass"
+                        android:ems="10"
+                        android:textSize="26sp" />
+
+                </RelativeLayout>
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow2"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:padding="20dp" >
+
+                <RelativeLayout
+                    android:id="@+id/btnSaveSettings"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center" >
+
+                    <View
+                        android:layout_width="100dp"
+                        android:layout_height="60dp"
+                        android:layout_centerInParent="true"
+                        android:background="#2357a5" />
+
+                    <TextView
+                        android:id="@+id/TextView03"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:text="@string/save"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="#fff"
+                        android:textSize="26sp" />
+
+                </RelativeLayout>
+
+            </TableRow>
+
+        </TableLayout>
 
     </ScrollView>
 

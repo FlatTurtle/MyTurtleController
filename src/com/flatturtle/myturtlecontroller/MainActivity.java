@@ -16,6 +16,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
@@ -24,8 +26,10 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.View.OnKeyListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -40,11 +44,24 @@ public class MainActivity extends Activity {
 	private LinearLayout containerButtons;
 	private View viewStart;
 	private View viewLocation;
+	private View viewSettings;
 	private TextView lblMode;
 	private RelativeLayout btnBack;
 	private RelativeLayout btnGo;
+	private RelativeLayout btnSaveSettings;
 	private LinearLayout btnSwitchPane;
 	private ArrayList<RelativeLayout> listButtons;
+
+	private TextView txtFrom;
+	private TextView txtTo;
+	private TextView txtPin;
+	private TextView txtPass;
+	
+	private SharedPreferences settings;
+    public static final String PREFS_NAME = "MyTurtleController";
+    public static final String SETTING_PIN = "PIN";
+    public static final String SETTING_PASSWORD = "PASSWORD";
+    private OnKeyListener enterKeyListener;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,16 +87,28 @@ public class MainActivity extends Activity {
 				System.exit(2);
 			}
 		});
-
-		// Link some views
+		
+		// Link necessary views
 		containerButtons = (LinearLayout) findViewById(R.id.containerButtons);
 		viewStart = findViewById(R.id.viewStart);
 		viewLocation = findViewById(R.id.viewLocation);
 		viewLocation.setVisibility(View.INVISIBLE);
+		viewSettings = findViewById(R.id.viewSettings);
+		viewSettings.setVisibility(View.INVISIBLE);
 		lblMode = (TextView) findViewById(R.id.lblMode);
 		btnBack = (RelativeLayout) findViewById(R.id.btnBack);
 		btnGo = (RelativeLayout) findViewById(R.id.btnGo);
 		btnSwitchPane = (LinearLayout) findViewById(R.id.btnSwitchPane);
+		btnSaveSettings = (RelativeLayout) findViewById(R.id.btnSaveSettings);
+		txtFrom = (TextView) findViewById(R.id.txtFrom);
+		txtTo = (TextView) findViewById(R.id.txtTo);
+		txtPin = (TextView) findViewById(R.id.txtPin);
+		txtPass = (TextView) findViewById(R.id.txtPass);
+		
+		settings = this.getSharedPreferences(PREFS_NAME, 0);
+		txtPin.setText(settings.getString(SETTING_PIN, ""));
+		txtPass.setText(settings.getString(SETTING_PASSWORD, "112233"));
+		
 
 		// Create buttons
 		ArrayList<MainButton> btns = new ArrayList<MainButton>();
@@ -186,7 +215,37 @@ public class MainActivity extends Activity {
 				Log.i("Panes", "Switch");
 			}
 		});
+		
+		// Save settings listener
+		btnSaveSettings.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				saveSettings();
+			}
+		});
+		
+		// Close keyboard on ENTER key for some fields
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+		final InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		enterKeyListener = new OnKeyListener() {
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				if((event.getAction() == KeyEvent.ACTION_DOWN) &&
+			            (keyCode == KeyEvent.KEYCODE_ENTER)){
+					Log.i("Keyboard","Hide");
+					inputManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+					return true;
+				}
+				return false;
+			}
+		};
+		txtFrom.setOnKeyListener(enterKeyListener);
+		txtTo.setOnKeyListener(enterKeyListener);
+		txtPin.setOnKeyListener(enterKeyListener);
+		txtPass.setOnKeyListener(enterKeyListener);
 	}
+	
+	
 
 	/**
 	 * Go back to the start screen
@@ -241,9 +300,10 @@ public class MainActivity extends Activity {
 						public void onClick(DialogInterface dialog,
 								int whichButton) {
 							Editable value = input.getText();
-							System.out.println(value);
-							// @TODO check password
-							System.exit(0);
+							Log.i("qf", value.toString());
+							if(value.toString().equals(txtPass.getText().toString())){
+								shutDown();
+							}
 						}
 					});
 
@@ -261,5 +321,56 @@ public class MainActivity extends Activity {
 		default:
 			return false;
 		}
+	}
+	
+	/**
+	 * User confirmed shutdown with password, also change settings or really quit?
+	 */
+	public void shutDown(){
+		AlertDialog.Builder alert = new AlertDialog.Builder(this);
+		alert.setTitle("Quit, or change settings?");
+		
+		// Add cancel and ok button
+		alert.setPositiveButton("Quit",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,
+							int whichButton) {
+						Log.i("App","Quit");
+						System.exit(0);
+					}
+				});
+
+		alert.setNegativeButton("Settings",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,
+							int whichButton) {
+							showSettings();
+					}
+				});
+
+		// Show the alert
+		alert.show();
+	}
+	
+	/**
+	 * Show settings view
+	 */
+	public void showSettings(){
+		Log.i("View","Show settings");
+		viewLocation.setVisibility(View.INVISIBLE);
+		viewStart.setVisibility(View.INVISIBLE);
+		viewSettings.setVisibility(View.VISIBLE);
+	}
+	
+	/**
+	 * Save settings
+	 */
+	public void saveSettings(){
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString(SETTING_PIN, txtPin.getText().toString());
+		editor.putString(SETTING_PASSWORD, txtPass.getText().toString());
+		editor.commit();
+		viewStart.setVisibility(View.VISIBLE);
+		viewSettings.setVisibility(View.INVISIBLE);	
 	}
 }
