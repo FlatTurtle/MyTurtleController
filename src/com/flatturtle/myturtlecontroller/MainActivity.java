@@ -294,19 +294,19 @@ public class MainActivity extends Activity {
 			final EditText input = new EditText(this);
 			alert.setView(input);
 
-			// Add cancel and ok button
-			alert.setPositiveButton("Ok",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,
-								int whichButton) {
-							Editable value = input.getText();
-							Log.i("qf", value.toString());
-							if(value.toString().equals(txtPass.getText().toString())){
-								shutDown();
-							}
-						}
-					});
-
+			// Check password
+			final DialogInterface.OnClickListener submitListener = new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog,
+						int whichButton) {
+					Editable value = input.getText();
+					if(value.toString().equals(txtPass.getText().toString())){
+						shutDown();
+					}
+				}
+			};
+			alert.setPositiveButton("Ok", submitListener);
+			
+			// Cancel exit
 			alert.setNegativeButton("Cancel",
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog,
@@ -314,9 +314,24 @@ public class MainActivity extends Activity {
 							// Canceled.
 						}
 					});
+			final AlertDialog alertDialog = alert.create(); 
+			
+			// ENTER key to submit
+			input.setOnKeyListener(new OnKeyListener() {
+				@Override
+				public boolean onKey(View v, int keyCode, KeyEvent event) {
+					if((event.getAction() == KeyEvent.ACTION_DOWN) &&
+				            (keyCode == KeyEvent.KEYCODE_ENTER)){
+						submitListener.onClick(null, 0);
+						alertDialog.dismiss();
+						return true;
+					}
+					return false;
+				}
+			});
 
 			// Show the alert
-			alert.show();
+			alertDialog.show();
 			return true;
 		default:
 			return false;
@@ -330,7 +345,7 @@ public class MainActivity extends Activity {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		alert.setTitle("Quit, or change settings?");
 		
-		// Add cancel and ok button
+		// Really quit
 		alert.setPositiveButton("Quit",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog,
@@ -340,6 +355,7 @@ public class MainActivity extends Activity {
 					}
 				});
 
+		// Show settings page
 		alert.setNegativeButton("Settings",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog,
