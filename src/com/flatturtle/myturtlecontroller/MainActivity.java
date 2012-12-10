@@ -8,7 +8,6 @@ package com.flatturtle.myturtlecontroller;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 
-import android.R.color;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -17,12 +16,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -50,8 +47,7 @@ public class MainActivity extends Activity {
 	private RelativeLayout btnGo;
 	private RelativeLayout btnSaveSettings;
 	private LinearLayout btnSwitchPane;
-	private ArrayList<RelativeLayout> listButtons;
-
+	
 	private TextView txtFrom;
 	private TextView txtTo;
 	private TextView txtPin;
@@ -62,7 +58,9 @@ public class MainActivity extends Activity {
     public static final String SETTING_PIN = "PIN";
     public static final String SETTING_PASSWORD = "PASSWORD";
     private OnKeyListener enterKeyListener;
-
+    
+    private APIClient api;
+   
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -109,6 +107,9 @@ public class MainActivity extends Activity {
 		txtPin.setText(settings.getString(SETTING_PIN, ""));
 		txtPass.setText(settings.getString(SETTING_PASSWORD, "112233"));
 		
+		// Create APIClient with API URL from strings	
+		api = new APIClient(getString(R.string.api));
+		this.authenticate();
 
 		// Create buttons
 		ArrayList<MainButton> btns = new ArrayList<MainButton>();
@@ -213,6 +214,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Log.i("Panes", "Switch");
+				api.rotatePane();
 			}
 		});
 		
@@ -245,6 +247,18 @@ public class MainActivity extends Activity {
 		txtPass.setOnKeyListener(enterKeyListener);
 	}
 	
+	/**
+	 * Authenticate with API
+	 */
+	public void authenticate(){
+		api.pin = txtPin.getText().toString();
+		if(!api.authenticate()){
+			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+			alert.setTitle("Authentication failed!");
+			alert.setMessage("No token receive, is the PIN-code correct?");
+			alert.show();
+		}
+	}
 	
 
 	/**
@@ -386,6 +400,9 @@ public class MainActivity extends Activity {
 		editor.putString(SETTING_PIN, txtPin.getText().toString());
 		editor.putString(SETTING_PASSWORD, txtPass.getText().toString());
 		editor.commit();
+		
+		this.authenticate();
+		
 		viewStart.setVisibility(View.VISIBLE);
 		viewSettings.setVisibility(View.INVISIBLE);	
 	}

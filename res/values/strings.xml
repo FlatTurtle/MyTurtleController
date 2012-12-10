@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- API location -->
+    <string name="api">https://s.flatturtle.com</string>
+    
     <!-- OTP API modes -->
     <string name="otp_mode_walk">WALK</string>
     <string name="otp_mode_bike">BICYCLE</string>
