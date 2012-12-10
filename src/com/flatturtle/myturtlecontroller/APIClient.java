@@ -2,7 +2,6 @@ package com.flatturtle.myturtlecontroller;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;

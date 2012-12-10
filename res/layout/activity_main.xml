@@ -64,27 +64,6 @@
         android:src="@drawable/logo_320_2x"
         tools:ignore="ContentDescription" />
 
-    <HorizontalScrollView
-        android:id="@+id/viewStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/containerHeader"
-        android:fadingEdge="horizontal|vertical"
-        android:scrollbars="horizontal|vertical" >
-
-        <LinearLayout
-            android:id="@+id/containerButtons"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="horizontal"
-            android:padding="26dp"
-            tools:ignore="ScrollViewSize" >
-        </LinearLayout>
-    </HorizontalScrollView>
-
     <ScrollView
         android:id="@+id/viewLocation"
         android:layout_width="wrap_content"
@@ -111,6 +90,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:gravity="right"
+                android:text="NMBS"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="#2357a6"
                 android:textSize="35sp" />
@@ -194,32 +174,6 @@
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="#fff"
                     android:textSize="40sp" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/btnBack"
-                android:layout_width="100dp"
-                android:layout_height="150dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="false"
-                android:layout_alignTop="@id/txtFrom" >
-
-                <View
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:background="#fff" />
-
-                <TextView
-                    android:id="@+id/TextView01"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:text="&lt;"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="#2357a5"
-                    android:textSize="80sp" />
 
             </RelativeLayout>
 

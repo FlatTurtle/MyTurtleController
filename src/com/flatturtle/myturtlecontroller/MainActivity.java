@@ -6,7 +6,6 @@
 package com.flatturtle.myturtlecontroller;
 
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -16,11 +15,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
@@ -28,22 +25,14 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
-
-import com.flatturtle.myturtlecontroller.ui.MainButton;
 
 public class MainActivity extends Activity {
 	private PendingIntent intent;
-	private LinearLayout containerButtons;
-	private View viewStart;
 	private View viewLocation;
 	private View viewSettings;
-	private TextView lblMode;
-	private RelativeLayout btnBack;
 	private RelativeLayout btnGo;
 	private RelativeLayout btnSaveSettings;
 	private LinearLayout btnSwitchPane;
@@ -87,14 +76,10 @@ public class MainActivity extends Activity {
 		});
 		
 		// Link necessary views
-		containerButtons = (LinearLayout) findViewById(R.id.containerButtons);
-		viewStart = findViewById(R.id.viewStart);
 		viewLocation = findViewById(R.id.viewLocation);
-		viewLocation.setVisibility(View.INVISIBLE);
+		viewLocation.setVisibility(View.VISIBLE);
 		viewSettings = findViewById(R.id.viewSettings);
 		viewSettings.setVisibility(View.INVISIBLE);
-		lblMode = (TextView) findViewById(R.id.lblMode);
-		btnBack = (RelativeLayout) findViewById(R.id.btnBack);
 		btnGo = (RelativeLayout) findViewById(R.id.btnGo);
 		btnSwitchPane = (LinearLayout) findViewById(R.id.btnSwitchPane);
 		btnSaveSettings = (RelativeLayout) findViewById(R.id.btnSaveSettings);
@@ -111,103 +96,6 @@ public class MainActivity extends Activity {
 		api = new APIClient(getString(R.string.api));
 		this.authenticate();
 
-		// Create buttons
-		ArrayList<MainButton> btns = new ArrayList<MainButton>();
-
-		ImageView icon = new ImageView(this);
-		icon.setImageResource(R.drawable.icon_walk);
-		btns.add(new MainButton(icon, getString(R.string.otp_mode_walk),
-				getString(R.string.btn_walk), 1));
-
-		icon = new ImageView(this);
-		icon.setImageResource(R.drawable.icon_bike);
-		btns.add(new MainButton(icon, getString(R.string.otp_mode_bike),
-				getString(R.string.btn_bike), 1));
-
-		icon = new ImageView(this);
-		icon.setImageResource(R.drawable.icon_public);
-		btns.add(new MainButton(icon, getString(R.string.otp_mode_transit),
-				getString(R.string.btn_public_transport), 2));
-
-		icon = new ImageView(this);
-		icon.setImageResource(R.drawable.icon_car);
-		btns.add(new MainButton(icon, getString(R.string.otp_mode_car),
-				getString(R.string.btn_car), 1));
-
-		int count = 0;
-		for (MainButton btn : btns) {
-			// Make layout for button
-			RelativeLayout btnContainer = new RelativeLayout(this);
-			if (count != btns.size() - 1)
-				btnContainer.setPadding(0, 0, 20, 0);
-			RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-					RelativeLayout.LayoutParams.WRAP_CONTENT,
-					RelativeLayout.LayoutParams.MATCH_PARENT);
-			btnContainer.setLayoutParams(layoutParams);
-
-			RelativeLayout newButton = new RelativeLayout(this);
-			layoutParams = new RelativeLayout.LayoutParams(
-					RelativeLayout.LayoutParams.WRAP_CONTENT,
-					RelativeLayout.LayoutParams.MATCH_PARENT);
-			newButton.setLayoutParams(layoutParams);
-			newButton.setTag(btn.tag);
-
-			// Add background
-			int backgroundColor = (count % 2 == 0) ? Color
-					.parseColor("#2357a5") : Color.parseColor("#0478bd");
-			View background = new View(this);
-			newButton.addView(background);
-			background.setBackgroundColor(backgroundColor);
-			layoutParams = new RelativeLayout.LayoutParams(228,
-					RelativeLayout.LayoutParams.FILL_PARENT);
-			background.setLayoutParams(layoutParams);
-
-			// Make textView
-			TextView label = new TextView(this);
-			label.setText(btn.title);
-			label.setTextSize(40);
-			label.setTextColor(Color.parseColor("#ffffff"));
-			label.setLines(btn.lines);
-			label.setGravity(Gravity.CENTER);
-			label.setWidth(200);
-			newButton.addView(label);
-			newButton.addView(btn.icon);
-
-			// Set textView position
-			LayoutParams lp = (LayoutParams) label.getLayoutParams();
-			lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-			lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
-			lp.setMargins(0, 0, 0, 20);
-			label.setLayoutParams(lp);
-
-			// Set icon position
-			lp = (LayoutParams) btn.icon.getLayoutParams();
-			lp.addRule(RelativeLayout.CENTER_HORIZONTAL);
-			lp.addRule(RelativeLayout.CENTER_VERTICAL);
-			btn.icon.setLayoutParams(lp);
-
-			// Big button listeners
-			newButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					String btnTag = v.getTag().toString();
-					Log.i("Button", btnTag);
-					modeSelected(btnTag);
-				}
-			});
-
-			count++;
-			btnContainer.addView(newButton);
-			containerButtons.addView(btnContainer);
-		}
-
-		// Back button listener
-		btnBack.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				backToTheStart();
-			}
-		});
 		
 		// Switch pane listener
 		btnSwitchPane.setOnClickListener(new View.OnClickListener() {	
@@ -258,37 +146,6 @@ public class MainActivity extends Activity {
 			alert.setMessage("No token receive, is the PIN-code correct?");
 			alert.show();
 		}
-	}
-	
-
-	/**
-	 * Go back to the start screen
-	 */
-	public void backToTheStart() {
-		Log.i("View", "Back to the start view");
-		viewLocation.setVisibility(View.INVISIBLE);
-		viewStart.setVisibility(View.VISIBLE);
-	}
-
-	/**
-	 * One of the big buttons was clicked
-	 * 
-	 * @param mode
-	 */
-	public void modeSelected(String mode) {
-		Log.i("View", "To the form view");
-		if (mode.equals("WALK")) {
-			lblMode.setText(getString(R.string.btn_walk));
-		} else if (mode.equals("BICYCLE")) {
-			lblMode.setText(getString(R.string.btn_bike));
-		} else if (mode.equals("TRANSIT")) {
-			lblMode.setText(getString(R.string.btn_public_transport));
-		} else if (mode.equals("CAR")) {
-			lblMode.setText(getString(R.string.btn_car));
-		}
-
-		viewStart.setVisibility(View.INVISIBLE);
-		viewLocation.setVisibility(View.VISIBLE);
 	}
 
 	/**
@@ -388,7 +245,6 @@ public class MainActivity extends Activity {
 	public void showSettings(){
 		Log.i("View","Show settings");
 		viewLocation.setVisibility(View.INVISIBLE);
-		viewStart.setVisibility(View.INVISIBLE);
 		viewSettings.setVisibility(View.VISIBLE);
 	}
 	
@@ -403,7 +259,7 @@ public class MainActivity extends Activity {
 		
 		this.authenticate();
 		
-		viewStart.setVisibility(View.VISIBLE);
 		viewSettings.setVisibility(View.INVISIBLE);	
+		viewLocation.setVisibility(View.VISIBLE);
 	}
 }
