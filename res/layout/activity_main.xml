@@ -95,15 +95,15 @@
                 android:textColor="#2357a6"
                 android:textSize="35sp" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/txtFrom"
                 android:layout_width="wrap_content"
                 android:layout_height="70dp"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentRight="true"
                 android:layout_centerHorizontal="true"
-                android:layout_marginLeft="230dp"
-                android:layout_marginRight="180dp"
+                android:layout_marginLeft="200dp"
+                android:layout_marginRight="210dp"
                 android:layout_marginTop="60dp"
                 android:ems="10"
                 android:textSize="26sp" />
@@ -114,28 +114,28 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@+id/txtFrom"
                 android:layout_alignBottom="@+id/txtFrom"
-                android:layout_marginLeft="40dp"
+                android:layout_marginLeft="10dp"
                 android:gravity="right"
                 android:text="@string/from"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="#2357a6"
                 android:textSize="26sp" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/txtTo"
                 android:layout_width="wrap_content"
                 android:layout_height="70dp"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentRight="true"
                 android:layout_below="@id/txtFrom"
-                android:layout_marginLeft="230dp"
-                android:layout_marginRight="180dp"
+                android:layout_marginLeft="200dp"
+                android:layout_marginRight="210dp"
                 android:layout_marginTop="15dp"
                 android:ems="10"
                 android:textSize="26sp" >
 
                 <requestFocus />
-            </EditText>
+            </AutoCompleteTextView>
 
             <TextView
                 android:id="@+id/lblTo"
@@ -143,7 +143,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignBaseline="@+id/txtTo"
                 android:layout_alignBottom="@+id/txtTo"
-                android:layout_marginLeft="40dp"
+                android:layout_marginLeft="10dp"
                 android:gravity="right"
                 android:text="@string/to"
                 android:textAppearance="?android:attr/textAppearanceLarge"
@@ -151,12 +151,65 @@
                 android:textSize="26sp" />
 
             <RelativeLayout
+                android:id="@+id/btnClearFrom"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_alignTop="@id/txtFrom"
+                android:layout_marginLeft="-220dp"
+                android:layout_toRightOf="@id/txtFrom" >
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" />
+
+                <TextView
+                    android:id="@+id/TextView01"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:paddingBottom="5dp"
+                    android:text="x"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="#aaa"
+                    android:textSize="40sp" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnClearTo"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_alignTop="@+id/txtTo"
+                android:layout_marginLeft="-220dp"
+                android:layout_toRightOf="@+id/txtTo" >
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" />
+
+                <TextView
+                    android:id="@+id/TextView04"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:paddingBottom="5dp"
+                    android:text="x"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="#aaa"
+                    android:textSize="40sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:id="@+id/btnGo"
-                android:layout_width="100dp"
+                android:layout_width="130dp"
                 android:layout_height="150dp"
                 android:layout_alignParentRight="true"
                 android:layout_alignTop="@id/txtFrom"
-                android:layout_marginRight="63dp" >
+                android:layout_marginRight="0dp" >
 
                 <View
                     android:layout_width="fill_parent"

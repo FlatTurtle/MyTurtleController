@@ -6,6 +6,11 @@
 package com.flatturtle.myturtlecontroller;
 
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
+
+import com.lazydroid.autoupdateapk.AutoUpdateApk;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -17,6 +22,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -24,21 +30,24 @@ import android.view.View.OnKeyListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements Observer {
 	private PendingIntent intent;
 	private View viewLocation;
 	private View viewSettings;
+	private RelativeLayout btnClearFrom;
+	private RelativeLayout btnClearTo;
 	private RelativeLayout btnGo;
 	private RelativeLayout btnSaveSettings;
 	private LinearLayout btnSwitchPane;
 	
-	private TextView txtFrom;
-	private TextView txtTo;
+	private AutoCompleteTextView txtFrom;
+	private AutoCompleteTextView txtTo;
 	private TextView txtPin;
 	private TextView txtPass;
 	
@@ -49,6 +58,10 @@ public class MainActivity extends Activity {
     private OnKeyListener enterKeyListener;
     
     private APIClient api;
+    
+	// declare updater class member here (or in the Application)
+	@SuppressWarnings("unused")
+	private AutoUpdateApk aua;
    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -80,11 +93,13 @@ public class MainActivity extends Activity {
 		viewLocation.setVisibility(View.VISIBLE);
 		viewSettings = findViewById(R.id.viewSettings);
 		viewSettings.setVisibility(View.INVISIBLE);
+		btnClearFrom = (RelativeLayout) findViewById(R.id.btnClearFrom);
+		btnClearTo = (RelativeLayout) findViewById(R.id.btnClearTo);
 		btnGo = (RelativeLayout) findViewById(R.id.btnGo);
 		btnSwitchPane = (LinearLayout) findViewById(R.id.btnSwitchPane);
 		btnSaveSettings = (RelativeLayout) findViewById(R.id.btnSaveSettings);
-		txtFrom = (TextView) findViewById(R.id.txtFrom);
-		txtTo = (TextView) findViewById(R.id.txtTo);
+		txtFrom = (AutoCompleteTextView) findViewById(R.id.txtFrom);
+		txtTo = (AutoCompleteTextView) findViewById(R.id.txtTo);
 		txtPin = (TextView) findViewById(R.id.txtPin);
 		txtPass = (TextView) findViewById(R.id.txtPass);
 		
@@ -133,6 +148,49 @@ public class MainActivity extends Activity {
 		txtTo.setOnKeyListener(enterKeyListener);
 		txtPin.setOnKeyListener(enterKeyListener);
 		txtPass.setOnKeyListener(enterKeyListener);
+		
+		// Autocomplete
+		final DataAdapter adapter = new DataAdapter(this, R.layout.list_item);
+		txtFrom.setAdapter(adapter);
+		txtTo.setAdapter(adapter);
+		
+		
+		// Auto update apk
+		aua = new AutoUpdateApk(getApplicationContext());
+		aua.addObserver(this);	// see the remark below, next to update() method
+		//aua.checkUpdatesManually();
+		
+		// Clear buttons
+		btnClearFrom.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				txtFrom.setText("");
+			}
+		});
+		btnClearTo.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				txtTo.setText("");
+			}
+		});
+		
+		// Go button
+		final MainActivity self = this;
+		btnGo.setOnClickListener(new View.OnClickListener() {		
+			@Override
+			public void onClick(View v) {
+				v.requestFocus();
+				inputManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+				if(txtFrom.getText().length() == 0 || txtTo.getText().length() == 0){
+					AlertDialog.Builder alert = new AlertDialog.Builder(self);
+					alert.setTitle("We need more information!");
+					alert.setMessage("Fill out both the 'from' and the 'to' field.");
+					alert.show();
+				}else{
+					api.route(txtFrom.getText().toString(), txtTo.getText().toString());
+				}
+			}
+		});
 	}
 	
 	/**
@@ -261,5 +319,19 @@ public class MainActivity extends Activity {
 		
 		viewSettings.setVisibility(View.INVISIBLE);	
 		viewLocation.setVisibility(View.VISIBLE);
+	}
+	
+	// There are three kinds of update messages sent from AutoUpdateApk (more may be added later):
+	// AUTOUPDATE_CHECKING, AUTOUPDATE_NO_UPDATE and AUTOUPDATE_GOT_UPDATE, which denote the start
+	// of update checking process, and two possible outcomes.
+	//
+	@Override
+	public void update(Observable observable, Object data) {
+		if( ((String)data).equalsIgnoreCase(AutoUpdateApk.AUTOUPDATE_GOT_UPDATE) ) {
+			android.util.Log.i("AutoUpdateApkActivity", "Have just received update!");
+		}
+		if( ((String)data).equalsIgnoreCase(AutoUpdateApk.AUTOUPDATE_HAVE_UPDATE) ) {
+			android.util.Log.i("AutoUpdateApkActivity", "There's an update available!");
+		}
 	}
 }

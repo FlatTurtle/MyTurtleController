@@ -9,8 +9,10 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -30,9 +32,13 @@ public class APIClient {
 	private static final String TAG = "APICLient";
 	private static final String URI_AUTH = "auth/mobile";
 	private static final String URI_SWITCHER_ROTATE = "tablet/plugins/switcher/rotate";
+	private static final String URI_ROUTE_NMBS = "tablet/plugins/route/nmbs";
 	
+	@SuppressWarnings("unused")
 	private static final String METHOD_GET = "GET";
 	private static final String METHOD_POST = "POST";
+	private static final String METHOD_PUT = "PUT";
+	private static final String METHOD_DELETE = "DELETE";
 	
 
 	public APIClient(String apiURL) {
@@ -55,10 +61,20 @@ public class APIClient {
 	 */
 	public void rotatePane(){
 		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("token", "widget"));
 		params.add(new BasicNameValuePair("type", "widget"));
 		
 		this.call(METHOD_POST, URI_SWITCHER_ROTATE, params);
+	}
+	
+	/**
+	 * Route call
+	 */
+	public void route(String from, String to){
+		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("from", from));
+		params.add(new BasicNameValuePair("to", to));
+		
+		this.call(METHOD_POST, URI_ROUTE_NMBS, params);
 	}
 	
 	/**
@@ -72,6 +88,10 @@ public class APIClient {
 		// Switch methods
 		if(method == METHOD_POST){
 			request = new HttpPost(API_URL + '/' + uri);
+		}else if(method == METHOD_PUT){
+			request = new HttpPut(API_URL + '/' + uri);
+		}else if(method == METHOD_DELETE){
+			request = new HttpDelete(API_URL + '/' + uri);
 		}else{
 			request = new HttpGet(API_URL + '/' + uri);
 		}
@@ -133,9 +153,6 @@ public class APIClient {
 		} catch (IOException e) {
 			Log.e(TAG, e.getMessage());
 		}
-		// } catch (JSONException e) {
-		// Log.e(TAG, e.getMessage());
-		// }
 
 		return body;
 	}
