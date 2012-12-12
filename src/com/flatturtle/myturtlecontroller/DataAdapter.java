@@ -25,10 +25,15 @@ public class DataAdapter extends ArrayAdapter<String> implements Filterable {
 	private static final String OUT_JSON = ".json";
 
 	private JSONArray predsJsonArray;
+	private int numberOfCompletes = 0;
 
 	public DataAdapter(Context context, int textViewResourceId) {
 		super(context, textViewResourceId);
-
+		
+		fetchData();
+	}
+	
+	public void fetchData(){
 		HttpURLConnection conn = null;
 		StringBuilder jsonResults = new StringBuilder();
 		try {
@@ -119,7 +124,11 @@ public class DataAdapter extends ArrayAdapter<String> implements Filterable {
 		} catch (JSONException e) {
 			Log.e(LOG_TAG, "Cannot process JSON results", e);
 		}
-
+		
+		// Refetch data after 1000 autocompletes
+		numberOfCompletes++;
+		if(numberOfCompletes % 1000 == 0)
+			fetchData();
 		return resultList;
 	}
 }

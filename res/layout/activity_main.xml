@@ -1,10 +1,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activityRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:id = "@+id/activityRoot"
-    android:windowSoftInputMode="adjustResize"  >
+    android:windowSoftInputMode="adjustResize"
+    tools:context=".MainActivity" >
 
     <View
         android:id="@+id/background"
@@ -49,8 +49,16 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:src="@android:drawable/ic_media_play" />
-
         </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressSwitch"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/btnSwitchPane"
+            android:indeterminate="true" />
     </RelativeLayout>
 
     <ImageView
@@ -64,8 +72,119 @@
         android:src="@drawable/logo_320_2x"
         tools:ignore="ContentDescription" />
 
+    <HorizontalScrollView
+        android:id="@+id/viewStart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/containerHeader"
+        android:visibility="invisible" >
+
+        <RelativeLayout
+            android:id="@+id/RelativeLayout1"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="false"
+                android:layout_marginLeft="150dp"
+                android:layout_marginTop="-20dp"
+                android:src="@drawable/icon_train" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="250dp" >
+
+                <RelativeLayout
+                    android:id="@+id/btnShowRoute"
+                    android:layout_width="230dp"
+                    android:layout_height="150dp"
+                    android:layout_marginRight="30dp" >
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:background="#2357a5" />
+
+                    <TextView
+                        android:id="@+id/TextView14"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="false"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:text="@string/route"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="#fff"
+                        android:textSize="40sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/btnShowDepartures"
+                    android:layout_width="230dp"
+                    android:layout_height="150dp"
+                    android:layout_marginRight="30dp" >
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:background="#0478bd" />
+
+                    <TextView
+                        android:id="@+id/TextView10"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="false"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:text="@string/departures"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="#fff"
+                        android:textSize="40sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/btnShowArrivals"
+                    android:layout_width="230dp"
+                    android:layout_height="150dp" >
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:background="#2357a5" />
+
+                    <TextView
+                        android:id="@+id/TextView08"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="false"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:text="@string/arrivals"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="#fff"
+                        android:textSize="40sp" />
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+    </HorizontalScrollView>
+
     <ScrollView
-        android:id="@+id/viewLocation"
+        android:id="@+id/viewRoute"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -73,16 +192,16 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/containerHeader"
         android:fadingEdge="horizontal|vertical"
-        android:paddingBottom="26dp"
         android:paddingTop="26dp"
-        android:scrollbars="horizontal|vertical" >
+        android:scrollbars="vertical"
+        android:visibility="invisible" >
 
         <RelativeLayout
             android:id="@+id/containerLocation"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginTop="-40dp" >
+            android:gravity="center_vertical"
+            android:paddingTop="65dp" >
 
             <TextView
                 android:id="@+id/lblMode"
@@ -90,7 +209,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:gravity="right"
-                android:text="NMBS"
+                android:text="@string/title"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="#2357a6"
                 android:textSize="35sp" />
@@ -106,6 +225,9 @@
                 android:layout_marginRight="210dp"
                 android:layout_marginTop="60dp"
                 android:ems="10"
+                android:inputType="textCapWords"
+                android:textColor="#2357a6"
+                android:textColorHint="#2357a6"
                 android:textSize="26sp" />
 
             <TextView
@@ -132,6 +254,9 @@
                 android:layout_marginRight="210dp"
                 android:layout_marginTop="15dp"
                 android:ems="10"
+                android:inputType="textCapWords"
+                android:textColor="#2357a6"
+                android:textColorHint="#2357a6"
                 android:textSize="26sp" >
 
                 <requestFocus />
@@ -174,7 +299,6 @@
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="#aaa"
                     android:textSize="40sp" />
-
             </RelativeLayout>
 
             <RelativeLayout
@@ -204,7 +328,7 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/btnGo"
+                android:id="@+id/btnGoRoute"
                 android:layout_width="130dp"
                 android:layout_height="150dp"
                 android:layout_alignParentRight="true"
@@ -227,11 +351,32 @@
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="#fff"
                     android:textSize="40sp" />
-
             </RelativeLayout>
 
-        </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/btnBackRoute"
+                android:layout_width="100dp"
+                android:layout_height="150dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignTop="@id/btnGoRoute" >
 
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:background="#fff" />
+
+                <TextView
+                    android:id="@+id/TextView05"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:text="&lt;"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="#2357a6"
+                    android:textSize="70sp" />
+            </RelativeLayout>
+        </RelativeLayout>
     </ScrollView>
 
     <ScrollView
@@ -272,9 +417,7 @@
                         android:textAppearance="?android:attr/textAppearanceLarge"
                         android:textColor="#2357a6"
                         android:textSize="36sp" />
-
                 </RelativeLayout>
-
             </TableRow>
 
             <TableRow
@@ -307,9 +450,7 @@
                         android:layout_toRightOf="@id/lblPin"
                         android:ems="10"
                         android:textSize="26sp" />
-
                 </RelativeLayout>
-
             </TableRow>
 
             <TableRow
@@ -344,16 +485,13 @@
                         android:layout_toRightOf="@id/lblPass"
                         android:ems="10"
                         android:textSize="26sp" />
-
                 </RelativeLayout>
-
             </TableRow>
 
             <TableRow
                 android:id="@+id/tableRow2"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:gravity="center"
                 android:padding="20dp" >
 
@@ -379,13 +517,287 @@
                         android:textAppearance="?android:attr/textAppearanceLarge"
                         android:textColor="#fff"
                         android:textSize="26sp" />
+                </RelativeLayout>
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/TableRow01"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:gravity="right" >
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginRight="0dp" >
+
+                    <RelativeLayout
+                        android:id="@+id/btnCheckUpdates"
+                        android:layout_width="230dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center" >
+
+                        <View
+                            android:layout_width="360dp"
+                            android:layout_height="40dp"
+                            android:layout_centerInParent="true"
+                            android:background="#fff" />
+
+                        <TextView
+                            android:id="@+id/TextView15"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
+                            android:text="@string/check_update"
+                            android:textAppearance="?android:attr/textAppearanceLarge"
+                            android:textColor="#999"
+                            android:textSize="16sp" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/btnExitToSettings"
+                        android:layout_width="130dp"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="840dp"
+                        android:layout_toRightOf="@id/btnCheckUpdates"
+                        android:gravity="center" >
+
+                        <View
+                            android:layout_width="360dp"
+                            android:layout_height="40dp"
+                            android:layout_centerInParent="true"
+                            android:background="#fff" />
+
+                        <TextView
+                            android:id="@+id/TextView16"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
+                            android:text="@string/quit_to_settings"
+                            android:textAppearance="?android:attr/textAppearanceLarge"
+                            android:textColor="#999"
+                            android:textSize="16sp" />
+                    </RelativeLayout>
 
                 </RelativeLayout>
 
             </TableRow>
-
         </TableLayout>
+    </ScrollView>
 
+    <ScrollView
+        android:id="@+id/viewPlanning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="false"
+        android:layout_below="@id/containerHeader"
+        android:fadingEdge="horizontal|vertical"
+        android:paddingTop="26dp"
+        android:scrollbars="vertical"
+        android:visibility="invisible" >
+
+        <RelativeLayout
+            android:id="@+id/btnBack"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingTop="65dp" >
+
+            <ImageView
+                android:id="@+id/iconTrain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/icon_train" />
+
+            <TextView
+                android:id="@+id/TextView06"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/iconTrain"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="-50dp"
+                android:gravity="right"
+                android:text="@string/planning"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#2357a6"
+                android:textSize="35sp" />
+
+            <RelativeLayout
+                android:id="@+id/RelativeLayout03"
+                android:layout_width="130dp"
+                android:layout_height="150dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="0dp" >
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:background="#fff" />
+
+                <TextView
+                    android:id="@+id/TextView07"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:text="&lt;"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="#2357a6"
+                    android:textSize="70sp" />
+            </RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
+
+    <ScrollView
+        android:id="@+id/viewStation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="false"
+        android:layout_below="@id/containerHeader"
+        android:fadingEdge="horizontal|vertical"
+        android:paddingTop="26dp"
+        android:scrollbars="vertical"
+        android:visibility="invisible" >
+
+        <RelativeLayout
+            android:id="@+id/RelativeLayout01"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingTop="103dp" >
+
+            <TextView
+                android:id="@+id/lblStation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:gravity="right"
+                android:text="@string/title"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#2357a6"
+                android:textSize="35sp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/txtStation"
+                android:layout_width="wrap_content"
+                android:layout_height="70dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="220dp"
+                android:layout_marginRight="210dp"
+                android:layout_marginTop="60dp"
+                android:ems="10"
+                android:inputType="textCapWords"
+                android:textColor="#2357a6"
+                android:textColorHint="#2357a6"
+                android:textSize="26sp" />
+
+            <TextView
+                android:id="@+id/TextView12"
+                android:layout_width="170dp"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/txtStation"
+                android:layout_alignBottom="@+id/txtStation"
+                android:layout_marginLeft="30dp"
+                android:gravity="right"
+                android:text="@string/station"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#2357a6"
+                android:textSize="26sp" />
+
+            <RelativeLayout
+                android:id="@+id/btnClearStation"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_alignTop="@+id/txtStation"
+                android:layout_marginLeft="-220dp"
+                android:layout_toRightOf="@+id/txtStation" >
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent" />
+
+                <TextView
+                    android:id="@+id/TextView13"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:paddingBottom="5dp"
+                    android:text="x"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="#aaa"
+                    android:textSize="40sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnGoStation"
+                android:layout_width="130dp"
+                android:layout_height="150dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@id/txtStation"
+                android:layout_marginRight="0dp"
+                android:layout_marginTop="-40dp" >
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:background="#2357a5" />
+
+                <TextView
+                    android:id="@+id/TextView11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="false"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/go"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="#fff"
+                    android:textSize="40sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/btnBackStation"
+                android:layout_width="100dp"
+                android:layout_height="150dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignTop="@id/btnGoStation" >
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:background="#fff" />
+
+                <TextView
+                    android:id="@+id/TextView09"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:text="&lt;"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="#2357a6"
+                    android:textSize="70sp" />
+            </RelativeLayout>
+
+        </RelativeLayout>
     </ScrollView>
 
 </RelativeLayout>

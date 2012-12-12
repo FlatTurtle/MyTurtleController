@@ -33,6 +33,7 @@ public class APIClient {
 	private static final String URI_AUTH = "auth/mobile";
 	private static final String URI_SWITCHER_ROTATE = "tablet/plugins/switcher/rotate";
 	private static final String URI_ROUTE_NMBS = "tablet/plugins/route/nmbs";
+	private static final String URI_ROUTE_NMBS_BOARD = "tablet/plugins/route/board";
 	
 	@SuppressWarnings("unused")
 	private static final String METHOD_GET = "GET";
@@ -75,6 +76,17 @@ public class APIClient {
 		params.add(new BasicNameValuePair("to", to));
 		
 		this.call(METHOD_POST, URI_ROUTE_NMBS, params);
+	}
+	
+	/**
+	 * Board call
+	 */
+	public void board(String type, String station){
+		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("type", type.toLowerCase()));
+		params.add(new BasicNameValuePair("station", station));
+		
+		this.call(METHOD_POST, URI_ROUTE_NMBS_BOARD, params);
 	}
 	
 	/**

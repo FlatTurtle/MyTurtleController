@@ -6,12 +6,10 @@
 package com.flatturtle.myturtlecontroller;
 
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-import com.lazydroid.autoupdateapk.AutoUpdateApk;
-
+import com.flatturtle.myturtlecontroller.R;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -21,11 +19,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.view.Window;
 import android.view.WindowManager;
@@ -33,23 +32,43 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.lazydroid.autoupdateapk.AutoUpdateApk;
+
 public class MainActivity extends Activity implements Observer {
 	private PendingIntent intent;
-	private View viewLocation;
+	private View viewStart;
+	private View viewStation;
+	private View viewRoute;
+	private View viewPlanning;
 	private View viewSettings;
+	private RelativeLayout btnShowRoute;
+	private RelativeLayout btnShowDepartures;
+	private RelativeLayout btnShowArrivals;
 	private RelativeLayout btnClearFrom;
 	private RelativeLayout btnClearTo;
-	private RelativeLayout btnGo;
+	private RelativeLayout btnClearStation;
+	private RelativeLayout btnGoRoute;
+	private RelativeLayout btnGoStation;
+	private RelativeLayout btnBackRoute;
+	private RelativeLayout btnBackStation;
+	private RelativeLayout btnBack;
 	private RelativeLayout btnSaveSettings;
+	private RelativeLayout btnCheckUpdates;
+	private RelativeLayout btnExitToSettings;
 	private LinearLayout btnSwitchPane;
+	private ProgressBar progressSwitch;
+	private Runnable donePaneSwitching;
 	
 	private AutoCompleteTextView txtFrom;
 	private AutoCompleteTextView txtTo;
+	private AutoCompleteTextView txtStation;
 	private TextView txtPin;
 	private TextView txtPass;
+	private TextView lblStation;
 	
 	private SharedPreferences settings;
     public static final String PREFS_NAME = "MyTurtleController";
@@ -60,12 +79,12 @@ public class MainActivity extends Activity implements Observer {
     private APIClient api;
     
 	// declare updater class member here (or in the Application)
-	@SuppressWarnings("unused")
 	private AutoUpdateApk aua;
    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		final MainActivity self = this;
 		// Hide the title bar
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		// Go fullscreen
@@ -89,19 +108,41 @@ public class MainActivity extends Activity implements Observer {
 		});
 		
 		// Link necessary views
-		viewLocation = findViewById(R.id.viewLocation);
-		viewLocation.setVisibility(View.VISIBLE);
+		viewStart = findViewById(R.id.viewStart);
+		viewStart.setVisibility(View.VISIBLE);
+		viewStation = findViewById(R.id.viewStation);
+		viewStation.setVisibility(View.INVISIBLE);
+		viewRoute = findViewById(R.id.viewRoute);
+		viewRoute.setVisibility(View.INVISIBLE);
+		viewPlanning = findViewById(R.id.viewPlanning);
+		viewPlanning.setVisibility(View.INVISIBLE);
 		viewSettings = findViewById(R.id.viewSettings);
 		viewSettings.setVisibility(View.INVISIBLE);
+
+		btnShowRoute = (RelativeLayout) findViewById(R.id.btnShowRoute);
+		btnShowDepartures = (RelativeLayout) findViewById(R.id.btnShowDepartures);
+		btnShowArrivals = (RelativeLayout) findViewById(R.id.btnShowArrivals);
+		
 		btnClearFrom = (RelativeLayout) findViewById(R.id.btnClearFrom);
 		btnClearTo = (RelativeLayout) findViewById(R.id.btnClearTo);
-		btnGo = (RelativeLayout) findViewById(R.id.btnGo);
+		btnClearStation = (RelativeLayout) findViewById(R.id.btnClearStation);
+		btnGoRoute = (RelativeLayout) findViewById(R.id.btnGoRoute);
+		btnGoStation = (RelativeLayout) findViewById(R.id.btnGoStation);
+		btnBackRoute = (RelativeLayout) findViewById(R.id.btnBackRoute);
+		btnBackStation = (RelativeLayout) findViewById(R.id.btnBackStation);
 		btnSwitchPane = (LinearLayout) findViewById(R.id.btnSwitchPane);
+		btnBack = (RelativeLayout) findViewById(R.id.btnBack);
 		btnSaveSettings = (RelativeLayout) findViewById(R.id.btnSaveSettings);
+		btnCheckUpdates = (RelativeLayout) findViewById(R.id.btnCheckUpdates);
+		btnExitToSettings = (RelativeLayout) findViewById(R.id.btnExitToSettings);
 		txtFrom = (AutoCompleteTextView) findViewById(R.id.txtFrom);
 		txtTo = (AutoCompleteTextView) findViewById(R.id.txtTo);
+		txtStation = (AutoCompleteTextView) findViewById(R.id.txtStation);
 		txtPin = (TextView) findViewById(R.id.txtPin);
 		txtPass = (TextView) findViewById(R.id.txtPass);
+		lblStation = (TextView) findViewById(R.id.lblStation);
+		progressSwitch = (ProgressBar) findViewById(R.id.progressSwitch);
+		progressSwitch.setVisibility(View.INVISIBLE);
 		
 		settings = this.getSharedPreferences(PREFS_NAME, 0);
 		txtPin.setText(settings.getString(SETTING_PIN, ""));
@@ -117,15 +158,51 @@ public class MainActivity extends Activity implements Observer {
 			@Override
 			public void onClick(View v) {
 				Log.i("Panes", "Switch");
+				btnSwitchPane.setEnabled(false);
+				progressSwitch.setVisibility(View.VISIBLE);
+				Handler handler = new Handler();
+				handler.postDelayed(donePaneSwitching, 1500);
 				api.rotatePane();
 			}
 		});
+		
+		// Runnable for progress on pane switcher
+		donePaneSwitching = new Runnable()
+		{
+		    @Override
+		    public void run()
+		    {
+				progressSwitch.setVisibility(View.INVISIBLE);
+		    	btnSwitchPane.setEnabled(true);
+		    }
+		 };
 		
 		// Save settings listener
 		btnSaveSettings.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				saveSettings();
+			}
+		});
+		btnCheckUpdates.setOnClickListener(new View.OnClickListener() {		
+			@Override
+			public void onClick(View v) {
+				btnCheckUpdates.setEnabled(false);
+				aua.checkUpdatesManually();
+				// Delay button
+				Handler handler = new Handler();
+				handler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						btnCheckUpdates.setEnabled(true);
+					}
+				}, 20000);
+			}
+		});
+		btnExitToSettings.setOnClickListener(new View.OnClickListener() {		
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_SETTINGS));
 			}
 		});
 		
@@ -146,19 +223,20 @@ public class MainActivity extends Activity implements Observer {
 		};
 		txtFrom.setOnKeyListener(enterKeyListener);
 		txtTo.setOnKeyListener(enterKeyListener);
+		txtStation.setOnKeyListener(enterKeyListener);
 		txtPin.setOnKeyListener(enterKeyListener);
 		txtPass.setOnKeyListener(enterKeyListener);
 		
-		// Autocomplete
+		// Autocomplete fields
 		final DataAdapter adapter = new DataAdapter(this, R.layout.list_item);
 		txtFrom.setAdapter(adapter);
 		txtTo.setAdapter(adapter);
+		txtStation.setAdapter(adapter);
 		
 		
 		// Auto update apk
 		aua = new AutoUpdateApk(getApplicationContext());
 		aua.addObserver(this);	// see the remark below, next to update() method
-		//aua.checkUpdatesManually();
 		
 		// Clear buttons
 		btnClearFrom.setOnClickListener(new View.OnClickListener() {
@@ -173,10 +251,40 @@ public class MainActivity extends Activity implements Observer {
 				txtTo.setText("");
 			}
 		});
+		btnClearStation.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				txtStation.setText("");
+			}
+		});
 		
-		// Go button
-		final MainActivity self = this;
-		btnGo.setOnClickListener(new View.OnClickListener() {		
+		// Show buttons
+		btnShowRoute.setOnClickListener(new View.OnClickListener() {		
+			@Override
+			public void onClick(View v) {
+				viewStart.setVisibility(View.INVISIBLE);
+				viewRoute.setVisibility(View.VISIBLE);
+			}
+		});
+		btnShowDepartures.setOnClickListener(new View.OnClickListener() {		
+			@Override
+			public void onClick(View v) {
+				lblStation.setText(R.string.departures);
+				viewStart.setVisibility(View.INVISIBLE);
+				viewStation.setVisibility(View.VISIBLE);
+			}
+		});
+		btnShowArrivals.setOnClickListener(new View.OnClickListener() {		
+			@Override
+			public void onClick(View v) {
+				lblStation.setText(R.string.arrivals);
+				viewStart.setVisibility(View.INVISIBLE);
+				viewStation.setVisibility(View.VISIBLE);
+			}
+		});
+		
+		// Go buttons
+		btnGoRoute.setOnClickListener(new View.OnClickListener() {		
 			@Override
 			public void onClick(View v) {
 				v.requestFocus();
@@ -185,12 +293,47 @@ public class MainActivity extends Activity implements Observer {
 					AlertDialog.Builder alert = new AlertDialog.Builder(self);
 					alert.setTitle("We need more information!");
 					alert.setMessage("Fill out both the 'from' and the 'to' field.");
+					alert.setPositiveButton("Ok", null);
 					alert.show();
 				}else{
+					viewRoute.setVisibility(View.INVISIBLE);
+					showPlanning();
 					api.route(txtFrom.getText().toString(), txtTo.getText().toString());
 				}
 			}
 		});
+		btnGoStation.setOnClickListener(new View.OnClickListener() {		
+			@Override
+			public void onClick(View v) {
+				v.requestFocus();
+				inputManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+				if(txtStation.getText().length() == 0){
+					AlertDialog.Builder alert = new AlertDialog.Builder(self);
+					alert.setTitle("We need more information!");
+					alert.setMessage("Fill out the 'station' field.");
+					alert.setPositiveButton("Ok", null);
+					alert.show();
+				}else{
+					viewStation.setVisibility(View.INVISIBLE);
+					showPlanning();
+					api.board(lblStation.getText().toString(), txtStation.getText().toString());
+				}
+			}
+		});
+		
+		// Back to start buttons
+		OnClickListener backToStartListener = new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				viewPlanning.setVisibility(View.INVISIBLE);
+				viewRoute.setVisibility(View.INVISIBLE);
+				viewStation.setVisibility(View.INVISIBLE);
+				viewStart.setVisibility(View.VISIBLE);
+			}
+		};
+		btnBack.setOnClickListener(backToStartListener);
+		btnBackRoute.setOnClickListener(backToStartListener);
+		btnBackStation.setOnClickListener(backToStartListener);
 	}
 	
 	/**
@@ -201,9 +344,35 @@ public class MainActivity extends Activity implements Observer {
 		if(!api.authenticate()){
 			AlertDialog.Builder alert = new AlertDialog.Builder(this);
 			alert.setTitle("Authentication failed!");
-			alert.setMessage("No token receive, is the PIN-code correct?");
+			alert.setMessage("No token received, is the PIN-code set/correct? Do you have internet connection?");
+			alert.setPositiveButton("Ok", null);
 			alert.show();
 		}
+	}
+	
+	/**
+	 * Show planning screen
+	 */
+	public void showPlanning(){
+		btnBack.setEnabled(false);
+		viewPlanning.setVisibility(View.VISIBLE);
+		
+		// Delay back button
+		Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				btnBack.setEnabled(true);
+			}
+		}, 600);
+		
+		// Back to start after 20 seconds
+		handler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				btnBack.performClick();
+			}
+		}, 20000);
 	}
 
 	/**
@@ -302,7 +471,10 @@ public class MainActivity extends Activity implements Observer {
 	 */
 	public void showSettings(){
 		Log.i("View","Show settings");
-		viewLocation.setVisibility(View.INVISIBLE);
+		viewStart.setVisibility(View.INVISIBLE);
+		viewRoute.setVisibility(View.INVISIBLE);
+		viewStation.setVisibility(View.INVISIBLE);
+		viewPlanning.setVisibility(View.INVISIBLE);
 		viewSettings.setVisibility(View.VISIBLE);
 	}
 	
@@ -318,7 +490,7 @@ public class MainActivity extends Activity implements Observer {
 		this.authenticate();
 		
 		viewSettings.setVisibility(View.INVISIBLE);	
-		viewLocation.setVisibility(View.VISIBLE);
+		viewStart.setVisibility(View.VISIBLE);
 	}
 	
 	// There are three kinds of update messages sent from AutoUpdateApk (more may be added later):
