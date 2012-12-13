@@ -63,26 +63,32 @@ public class MainActivity extends Activity implements Observer {
 	private RelativeLayout btnExitToSettings;
 	private LinearLayout btnSwitchPane;
 	private ProgressBar progressSwitch;
+
+	private Handler paneSwitchHandler;
+	private Handler backToStartHandler;
+
 	private Runnable donePaneSwitching;
-	
+	private Runnable doubleClickRunnable;
+	private Runnable backToStartRunnable;
+
 	private AutoCompleteTextView txtFrom;
 	private AutoCompleteTextView txtTo;
 	private AutoCompleteTextView txtStation;
 	private TextView txtPin;
 	private TextView txtPass;
 	private TextView lblStation;
-	
+
 	private SharedPreferences settings;
-    public static final String PREFS_NAME = "MyTurtleController";
-    public static final String SETTING_PIN = "PIN";
-    public static final String SETTING_PASSWORD = "PASSWORD";
-    private OnKeyListener enterKeyListener;
-    
-    private APIClient api;
-    
+	public static final String PREFS_NAME = "MyTurtleController";
+	public static final String SETTING_PIN = "PIN";
+	public static final String SETTING_PASSWORD = "PASSWORD";
+	private OnKeyListener enterKeyListener;
+
+	private APIClient api;
+
 	// declare updater class member here (or in the Application)
 	private AutoUpdateApk aua;
-   
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -108,7 +114,7 @@ public class MainActivity extends Activity implements Observer {
 				System.exit(2);
 			}
 		});
-		
+
 		// Link necessary views
 		viewStart = findViewById(R.id.viewStart);
 		viewStart.setVisibility(View.VISIBLE);
@@ -124,7 +130,7 @@ public class MainActivity extends Activity implements Observer {
 		btnShowRoute = (RelativeLayout) findViewById(R.id.btnShowRoute);
 		btnShowDepartures = (RelativeLayout) findViewById(R.id.btnShowDepartures);
 		btnShowArrivals = (RelativeLayout) findViewById(R.id.btnShowArrivals);
-		
+
 		btnClearFrom = (RelativeLayout) findViewById(R.id.btnClearFrom);
 		btnClearTo = (RelativeLayout) findViewById(R.id.btnClearTo);
 		btnClearStation = (RelativeLayout) findViewById(R.id.btnClearStation);
@@ -145,18 +151,20 @@ public class MainActivity extends Activity implements Observer {
 		lblStation = (TextView) findViewById(R.id.lblStation);
 		progressSwitch = (ProgressBar) findViewById(R.id.progressSwitch);
 		progressSwitch.setVisibility(View.INVISIBLE);
-		
+
 		settings = this.getSharedPreferences(PREFS_NAME, 0);
 		txtPin.setText(settings.getString(SETTING_PIN, ""));
 		txtPass.setText(settings.getString(SETTING_PASSWORD, "112233"));
-		
-		// Create APIClient with API URL from strings	
+
+		// Create APIClient with API URL from strings
 		api = new APIClient(getString(R.string.api), this);
 		this.authenticate();
 
-		
+		paneSwitchHandler = new Handler();
+		backToStartHandler = new Handler();
+
 		// Switch pane listener
-		btnSwitchPane.setOnClickListener(new View.OnClickListener() {	
+		btnSwitchPane.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Log.i("Panes", "Switch");
@@ -164,25 +172,35 @@ public class MainActivity extends Activity implements Observer {
 					api.rotatePane();
 					btnSwitchPane.setEnabled(false);
 					progressSwitch.setVisibility(View.VISIBLE);
-					Handler handler = new Handler();
-					handler.postDelayed(donePaneSwitching, 1500);
+					paneSwitchHandler.removeCallbacks(donePaneSwitching);
+					paneSwitchHandler.postDelayed(donePaneSwitching, 1500);
 				} catch (NetworkErrorException e) {
 					noInternetAlert();
 				}
 			}
 		});
-		
+
 		// Runnable for progress on pane switcher
-		donePaneSwitching = new Runnable()
-		{
-		    @Override
-		    public void run()
-		    {
+		donePaneSwitching = new Runnable() {
+			@Override
+			public void run() {
 				progressSwitch.setVisibility(View.INVISIBLE);
-		    	btnSwitchPane.setEnabled(true);
-		    }
-		 };
-		
+				btnSwitchPane.setEnabled(true);
+			}
+		};
+		doubleClickRunnable = new Runnable() {
+			@Override
+			public void run() {
+				btnBack.setEnabled(true);
+			}
+		};
+		backToStartRunnable = new Runnable() {
+			@Override
+			public void run() {
+				btnBack.performClick();
+			}
+		};
+
 		// Save settings listener
 		btnSaveSettings.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -190,7 +208,7 @@ public class MainActivity extends Activity implements Observer {
 				saveSettings();
 			}
 		});
-		btnCheckUpdates.setOnClickListener(new View.OnClickListener() {		
+		btnCheckUpdates.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				btnCheckUpdates.setEnabled(false);
@@ -202,26 +220,29 @@ public class MainActivity extends Activity implements Observer {
 					public void run() {
 						btnCheckUpdates.setEnabled(true);
 					}
-				}, 20000);
+				}, 60000);
 			}
 		});
-		btnExitToSettings.setOnClickListener(new View.OnClickListener() {		
+		btnExitToSettings.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
+				startActivity(new Intent(
+						android.provider.Settings.ACTION_SETTINGS));
 			}
 		});
-		
+
 		// Close keyboard on ENTER key for some fields
-		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+		getWindow().setSoftInputMode(
+				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		final InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		enterKeyListener = new OnKeyListener() {
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if((event.getAction() == KeyEvent.ACTION_DOWN) &&
-			            (keyCode == KeyEvent.KEYCODE_ENTER)){
-					Log.i("Keyboard","Hide");
-					inputManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+				if ((event.getAction() == KeyEvent.ACTION_DOWN)
+						&& (keyCode == KeyEvent.KEYCODE_ENTER)) {
+					Log.i("Keyboard", "Hide");
+					inputManager.hideSoftInputFromWindow(v.getWindowToken(),
+							InputMethodManager.HIDE_NOT_ALWAYS);
 					return true;
 				}
 				return false;
@@ -232,18 +253,17 @@ public class MainActivity extends Activity implements Observer {
 		txtStation.setOnKeyListener(enterKeyListener);
 		txtPin.setOnKeyListener(enterKeyListener);
 		txtPass.setOnKeyListener(enterKeyListener);
-		
+
 		// Autocomplete fields
 		final DataAdapter adapter = new DataAdapter(this, R.layout.list_item);
 		txtFrom.setAdapter(adapter);
 		txtTo.setAdapter(adapter);
 		txtStation.setAdapter(adapter);
-		
-		
+
 		// Auto update apk
 		aua = new AutoUpdateApk(getApplicationContext());
-		aua.addObserver(this);	// see the remark below, next to update() method
-		
+		aua.addObserver(this); // see the remark below, next to update() method
+
 		// Clear buttons
 		btnClearFrom.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -263,16 +283,16 @@ public class MainActivity extends Activity implements Observer {
 				txtStation.setText("");
 			}
 		});
-		
+
 		// Show buttons
-		btnShowRoute.setOnClickListener(new View.OnClickListener() {		
+		btnShowRoute.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				viewStart.setVisibility(View.INVISIBLE);
 				viewRoute.setVisibility(View.VISIBLE);
 			}
 		});
-		btnShowDepartures.setOnClickListener(new View.OnClickListener() {		
+		btnShowDepartures.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				lblStation.setText(R.string.departures);
@@ -280,7 +300,7 @@ public class MainActivity extends Activity implements Observer {
 				viewStation.setVisibility(View.VISIBLE);
 			}
 		});
-		btnShowArrivals.setOnClickListener(new View.OnClickListener() {		
+		btnShowArrivals.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				lblStation.setText(R.string.arrivals);
@@ -288,22 +308,25 @@ public class MainActivity extends Activity implements Observer {
 				viewStation.setVisibility(View.VISIBLE);
 			}
 		});
-		
+
 		// Go buttons
-		btnGoRoute.setOnClickListener(new View.OnClickListener() {		
+		btnGoRoute.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				v.requestFocus();
-				inputManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-				if(txtFrom.getText().length() == 0 || txtTo.getText().length() == 0){
+				inputManager.hideSoftInputFromWindow(v.getWindowToken(),
+						InputMethodManager.HIDE_NOT_ALWAYS);
+				if (txtFrom.getText().length() == 0
+						|| txtTo.getText().length() == 0) {
 					AlertDialog.Builder alert = new AlertDialog.Builder(self);
 					alert.setTitle("We need more information!");
 					alert.setMessage("Fill out both the 'from' and the 'to' field.");
 					alert.setPositiveButton("Ok", null);
 					alert.show();
-				}else{
+				} else {
 					try {
-						api.route(txtFrom.getText().toString(), txtTo.getText().toString());
+						api.route(txtFrom.getText().toString(), txtTo.getText()
+								.toString());
 						viewRoute.setVisibility(View.INVISIBLE);
 						showPlanning();
 					} catch (NetworkErrorException e) {
@@ -312,20 +335,22 @@ public class MainActivity extends Activity implements Observer {
 				}
 			}
 		});
-		btnGoStation.setOnClickListener(new View.OnClickListener() {		
+		btnGoStation.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				v.requestFocus();
-				inputManager.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-				if(txtStation.getText().length() == 0){
+				inputManager.hideSoftInputFromWindow(v.getWindowToken(),
+						InputMethodManager.HIDE_NOT_ALWAYS);
+				if (txtStation.getText().length() == 0) {
 					AlertDialog.Builder alert = new AlertDialog.Builder(self);
 					alert.setTitle("We need more information!");
 					alert.setMessage("Fill out the 'station' field.");
 					alert.setPositiveButton("Ok", null);
 					alert.show();
-				}else{
+				} else {
 					try {
-						api.board(lblStation.getText().toString(), txtStation.getText().toString());
+						api.board(lblStation.getText().toString(), txtStation
+								.getText().toString());
 						viewStation.setVisibility(View.INVISIBLE);
 						showPlanning();
 					} catch (NetworkErrorException e) {
@@ -334,11 +359,13 @@ public class MainActivity extends Activity implements Observer {
 				}
 			}
 		});
-		
+
 		// Back to start buttons
 		OnClickListener backToStartListener = new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				backToStartHandler.removeCallbacks(backToStartRunnable);
+				
 				viewPlanning.setVisibility(View.INVISIBLE);
 				viewRoute.setVisibility(View.INVISIBLE);
 				viewStation.setVisibility(View.INVISIBLE);
@@ -349,25 +376,25 @@ public class MainActivity extends Activity implements Observer {
 		btnBackRoute.setOnClickListener(backToStartListener);
 		btnBackStation.setOnClickListener(backToStartListener);
 	}
-	
+
 	/**
 	 * Show alert if there is not internet connection
 	 */
-	public void noInternetAlert(){
+	public void noInternetAlert() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		alert.setTitle("No internet connection!");
 		alert.setMessage("Do you have internet connection? Is the WIFI turned on and configured correctly?");
 		alert.setPositiveButton("Ok", null);
 		alert.show();
 	}
-	
+
 	/**
 	 * Authenticate with API
 	 */
-	public void authenticate(){
+	public void authenticate() {
 		api.pin = txtPin.getText().toString();
 		try {
-			if(!api.authenticate()){
+			if (!api.authenticate()) {
 				AlertDialog.Builder alert = new AlertDialog.Builder(this);
 				alert.setTitle("Authentication failed!");
 				alert.setMessage("No token received, is the PIN-code set/correct? Do you have internet connection?");
@@ -378,30 +405,21 @@ public class MainActivity extends Activity implements Observer {
 			noInternetAlert();
 		}
 	}
-	
+
 	/**
 	 * Show planning screen
 	 */
-	public void showPlanning(){
+	public void showPlanning() {
 		btnBack.setEnabled(false);
 		viewPlanning.setVisibility(View.VISIBLE);
-		
+
+		backToStartHandler.removeCallbacks(doubleClickRunnable);
+		backToStartHandler.removeCallbacks(backToStartRunnable);
+
 		// Delay back button
-		Handler handler = new Handler();
-		handler.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				btnBack.setEnabled(true);
-			}
-		}, 600);
-		
+		backToStartHandler.postDelayed(doubleClickRunnable, 600);
 		// Back to start after 20 seconds
-		handler.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				btnBack.performClick();
-			}
-		}, 20000);
+		backToStartHandler.postDelayed(backToStartRunnable, 20000);
 	}
 
 	/**
@@ -423,17 +441,17 @@ public class MainActivity extends Activity implements Observer {
 
 			// Check password
 			final DialogInterface.OnClickListener submitListener = new DialogInterface.OnClickListener() {
-				public void onClick(DialogInterface dialog,
-						int whichButton) {
+				public void onClick(DialogInterface dialog, int whichButton) {
 					Editable value = input.getText();
-					if(value.toString().equals(txtPass.getText().toString()) ||
-							value.toString().equals(getString(R.string.admin_safety_password))){
+					if (value.toString().equals(txtPass.getText().toString())
+							|| value.toString().equals(
+									getString(R.string.admin_safety_password))) {
 						shutDown();
 					}
 				}
 			};
 			alert.setPositiveButton("Ok", submitListener);
-			
+
 			// Cancel exit
 			alert.setNegativeButton("Cancel",
 					new DialogInterface.OnClickListener() {
@@ -442,14 +460,14 @@ public class MainActivity extends Activity implements Observer {
 							// Canceled.
 						}
 					});
-			final AlertDialog alertDialog = alert.create(); 
-			
+			final AlertDialog alertDialog = alert.create();
+
 			// ENTER key to submit
 			input.setOnKeyListener(new OnKeyListener() {
 				@Override
 				public boolean onKey(View v, int keyCode, KeyEvent event) {
-					if((event.getAction() == KeyEvent.ACTION_DOWN) &&
-				            (keyCode == KeyEvent.KEYCODE_ENTER)){
+					if ((event.getAction() == KeyEvent.ACTION_DOWN)
+							&& (keyCode == KeyEvent.KEYCODE_ENTER)) {
 						submitListener.onClick(null, 0);
 						alertDialog.dismiss();
 						return true;
@@ -465,75 +483,79 @@ public class MainActivity extends Activity implements Observer {
 			return false;
 		}
 	}
-	
+
 	/**
-	 * User confirmed shutdown with password, also change settings or really quit?
+	 * User confirmed shutdown with password, also change settings or really
+	 * quit?
 	 */
-	public void shutDown(){
+	public void shutDown() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		alert.setTitle("Quit, or change settings?");
-		
+
 		// Really quit
-		alert.setPositiveButton("Quit",
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog,
-							int whichButton) {
-						Log.i("App","Quit");
-						System.exit(0);
-					}
-				});
+		alert.setPositiveButton("Quit", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				Log.i("App", "Quit");
+				System.exit(0);
+			}
+		});
 
 		// Show settings page
 		alert.setNegativeButton("Settings",
 				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog,
-							int whichButton) {
-							showSettings();
+					public void onClick(DialogInterface dialog, int whichButton) {
+						showSettings();
 					}
 				});
 
 		// Show the alert
 		alert.show();
 	}
-	
+
 	/**
 	 * Show settings view
 	 */
-	public void showSettings(){
-		Log.i("View","Show settings");
+	public void showSettings() {
+		Log.i("View", "Show settings");
 		viewStart.setVisibility(View.INVISIBLE);
 		viewRoute.setVisibility(View.INVISIBLE);
 		viewStation.setVisibility(View.INVISIBLE);
 		viewPlanning.setVisibility(View.INVISIBLE);
 		viewSettings.setVisibility(View.VISIBLE);
 	}
-	
+
 	/**
 	 * Save settings
 	 */
-	public void saveSettings(){
+	public void saveSettings() {
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString(SETTING_PIN, txtPin.getText().toString());
 		editor.putString(SETTING_PASSWORD, txtPass.getText().toString());
 		editor.commit();
-		
+
 		this.authenticate();
-		
-		viewSettings.setVisibility(View.INVISIBLE);	
+
+		viewSettings.setVisibility(View.INVISIBLE);
 		viewStart.setVisibility(View.VISIBLE);
 	}
-	
-	// There are three kinds of update messages sent from AutoUpdateApk (more may be added later):
-	// AUTOUPDATE_CHECKING, AUTOUPDATE_NO_UPDATE and AUTOUPDATE_GOT_UPDATE, which denote the start
+
+	// There are three kinds of update messages sent from AutoUpdateApk (more
+	// may be added later):
+	// AUTOUPDATE_CHECKING, AUTOUPDATE_NO_UPDATE and AUTOUPDATE_GOT_UPDATE,
+	// which denote the start
 	// of update checking process, and two possible outcomes.
 	//
 	@Override
 	public void update(Observable observable, Object data) {
-		if( ((String)data).equalsIgnoreCase(AutoUpdateApk.AUTOUPDATE_GOT_UPDATE) ) {
-			android.util.Log.i("AutoUpdateApkActivity", "Have just received update!");
+		if (((String) data)
+				.equalsIgnoreCase(AutoUpdateApk.AUTOUPDATE_GOT_UPDATE)) {
+			android.util.Log.i("AutoUpdateApkActivity",
+					"Have just received update!");
 		}
-		if( ((String)data).equalsIgnoreCase(AutoUpdateApk.AUTOUPDATE_HAVE_UPDATE) ) {
-			android.util.Log.i("AutoUpdateApkActivity", "There's an update available!");
+		if (((String) data)
+				.equalsIgnoreCase(AutoUpdateApk.AUTOUPDATE_HAVE_UPDATE)) {
+			android.util.Log.i("AutoUpdateApkActivity",
+					"There's an update available!");
 		}
 	}
 }
