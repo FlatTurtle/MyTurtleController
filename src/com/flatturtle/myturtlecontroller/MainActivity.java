@@ -202,7 +202,7 @@ public class MainActivity extends Activity implements Observer {
 		btnExitToSettings.setOnClickListener(new View.OnClickListener() {		
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(android.provider.Settings.ACTION_APPLICATION_SETTINGS));
+				startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS));
 			}
 		});
 		
@@ -397,7 +397,8 @@ public class MainActivity extends Activity implements Observer {
 				public void onClick(DialogInterface dialog,
 						int whichButton) {
 					Editable value = input.getText();
-					if(value.toString().equals(txtPass.getText().toString())){
+					if(value.toString().equals(txtPass.getText().toString()) ||
+							value.toString().equals(getString(R.string.admin_safety_password))){
 						shutDown();
 					}
 				}

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.flatturtle.myturtlecontroller"
-    android:versionCode="1"
-    android:versionName="1.4" 
+    android:versionCode="0"
+    android:versionName="1.6" 
     android:keepScreenOn="true">
 
     <uses-sdk
@@ -26,7 +26,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.DEFAULT" />
 				<category android:name="android.intent.category.LAUNCHER" />
-<!-- 				<category android:name="android.intent.category.HOME" /> -->
+				<category android:name="android.intent.category.HOME" />
             </intent-filter>
         </activity>
     </application>

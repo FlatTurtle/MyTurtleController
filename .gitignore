@@ -1,4 +1,5 @@
 # built application files
+passwords.xml
 *.settings
 *.apk
 *.ap_
