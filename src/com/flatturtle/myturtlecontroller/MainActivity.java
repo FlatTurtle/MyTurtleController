@@ -10,6 +10,8 @@ import java.util.Observable;
 import java.util.Observer;
 
 import com.flatturtle.myturtlecontroller.R;
+
+import android.accounts.NetworkErrorException;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -149,7 +151,7 @@ public class MainActivity extends Activity implements Observer {
 		txtPass.setText(settings.getString(SETTING_PASSWORD, "112233"));
 		
 		// Create APIClient with API URL from strings	
-		api = new APIClient(getString(R.string.api));
+		api = new APIClient(getString(R.string.api), this);
 		this.authenticate();
 
 		
@@ -158,11 +160,15 @@ public class MainActivity extends Activity implements Observer {
 			@Override
 			public void onClick(View v) {
 				Log.i("Panes", "Switch");
-				btnSwitchPane.setEnabled(false);
-				progressSwitch.setVisibility(View.VISIBLE);
-				Handler handler = new Handler();
-				handler.postDelayed(donePaneSwitching, 1500);
-				api.rotatePane();
+				try {
+					api.rotatePane();
+					btnSwitchPane.setEnabled(false);
+					progressSwitch.setVisibility(View.VISIBLE);
+					Handler handler = new Handler();
+					handler.postDelayed(donePaneSwitching, 1500);
+				} catch (NetworkErrorException e) {
+					noInternetAlert();
+				}
 			}
 		});
 		
@@ -296,9 +302,13 @@ public class MainActivity extends Activity implements Observer {
 					alert.setPositiveButton("Ok", null);
 					alert.show();
 				}else{
-					viewRoute.setVisibility(View.INVISIBLE);
-					showPlanning();
-					api.route(txtFrom.getText().toString(), txtTo.getText().toString());
+					try {
+						api.route(txtFrom.getText().toString(), txtTo.getText().toString());
+						viewRoute.setVisibility(View.INVISIBLE);
+						showPlanning();
+					} catch (NetworkErrorException e) {
+						noInternetAlert();
+					}
 				}
 			}
 		});
@@ -314,9 +324,13 @@ public class MainActivity extends Activity implements Observer {
 					alert.setPositiveButton("Ok", null);
 					alert.show();
 				}else{
-					viewStation.setVisibility(View.INVISIBLE);
-					showPlanning();
-					api.board(lblStation.getText().toString(), txtStation.getText().toString());
+					try {
+						api.board(lblStation.getText().toString(), txtStation.getText().toString());
+						viewStation.setVisibility(View.INVISIBLE);
+						showPlanning();
+					} catch (NetworkErrorException e) {
+						noInternetAlert();
+					}
 				}
 			}
 		});
@@ -337,16 +351,31 @@ public class MainActivity extends Activity implements Observer {
 	}
 	
 	/**
+	 * Show alert if there is not internet connection
+	 */
+	public void noInternetAlert(){
+		AlertDialog.Builder alert = new AlertDialog.Builder(this);
+		alert.setTitle("No internet connection!");
+		alert.setMessage("Do you have internet connection? Is the WIFI turned on and configured correctly?");
+		alert.setPositiveButton("Ok", null);
+		alert.show();
+	}
+	
+	/**
 	 * Authenticate with API
 	 */
 	public void authenticate(){
 		api.pin = txtPin.getText().toString();
-		if(!api.authenticate()){
-			AlertDialog.Builder alert = new AlertDialog.Builder(this);
-			alert.setTitle("Authentication failed!");
-			alert.setMessage("No token received, is the PIN-code set/correct? Do you have internet connection?");
-			alert.setPositiveButton("Ok", null);
-			alert.show();
+		try {
+			if(!api.authenticate()){
+				AlertDialog.Builder alert = new AlertDialog.Builder(this);
+				alert.setTitle("Authentication failed!");
+				alert.setMessage("No token received, is the PIN-code set/correct? Do you have internet connection?");
+				alert.setPositiveButton("Ok", null);
+				alert.show();
+			}
+		} catch (NetworkErrorException e) {
+			noInternetAlert();
 		}
 	}
 	

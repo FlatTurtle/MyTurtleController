@@ -19,6 +19,12 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
+import android.R.bool;
+import android.accounts.NetworkErrorException;
+import android.app.Activity;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 public class APIClient {
@@ -26,6 +32,7 @@ public class APIClient {
 	private String API_URL;
 	private HttpResponse response;
 	private String token;
+	private ConnectivityManager conMgr;
 	
 	public String pin;
 
@@ -42,14 +49,16 @@ public class APIClient {
 	private static final String METHOD_DELETE = "DELETE";
 	
 
-	public APIClient(String apiURL) {
+	public APIClient(String apiURL, Activity act) {
 		this.API_URL = apiURL;
+
+		conMgr = (ConnectivityManager) act.getSystemService(Context.CONNECTIVITY_SERVICE);
 	}
 
 	/**
 	 * Authenticate with API
 	 */
-	public Boolean authenticate() {
+	public Boolean authenticate() throws NetworkErrorException{
 		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("pin", pin));
 		
@@ -60,7 +69,7 @@ public class APIClient {
 	/**
 	 * Rotate pane
 	 */
-	public void rotatePane(){
+	public void rotatePane() throws NetworkErrorException{
 		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("type", "widget"));
 		
@@ -70,7 +79,7 @@ public class APIClient {
 	/**
 	 * Route call
 	 */
-	public void route(String from, String to){
+	public void route(String from, String to) throws NetworkErrorException{
 		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("from", from));
 		params.add(new BasicNameValuePair("to", to));
@@ -81,7 +90,7 @@ public class APIClient {
 	/**
 	 * Board call
 	 */
-	public void board(String type, String station){
+	public void board(String type, String station) throws NetworkErrorException{
 		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("type", type.toLowerCase()));
 		params.add(new BasicNameValuePair("station", station));
@@ -92,7 +101,21 @@ public class APIClient {
 	/**
 	 * General API call method
 	 */
-	public String call(String method, String uri, ArrayList<NameValuePair> params) {
+	public String call(String method, String uri, ArrayList<NameValuePair> params) throws NetworkErrorException{
+		// Check internet connection
+		NetworkInfo infos[] = conMgr.getAllNetworkInfo(); 
+		boolean internet = false;
+		for(NetworkInfo info : infos){
+			if (info.getState() == NetworkInfo.State.CONNECTED || info.getState() == NetworkInfo.State.CONNECTING) {
+				internet = true;
+				break;
+			}
+		}
+		if(!internet){
+			throw new NetworkErrorException();
+		}
+		
+		
 		http = new DefaultHttpClient();
 		
 		HttpRequestBase request;
@@ -112,7 +135,7 @@ public class APIClient {
 			if(token != null)
 				request.addHeader("Authorization", token);
 			else
-				return null;
+				this.authenticate();
 		}
 		
 		String body = null;
