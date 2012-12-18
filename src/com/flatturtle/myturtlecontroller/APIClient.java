@@ -2,6 +2,7 @@ package com.flatturtle.myturtlecontroller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Observable;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -19,7 +20,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
-import android.R.bool;
 import android.accounts.NetworkErrorException;
 import android.app.Activity;
 import android.content.Context;
@@ -27,7 +27,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
-public class APIClient {
+public class APIClient extends Observable {
 	private HttpClient http;
 	private String API_URL;
 	private HttpResponse response;
@@ -69,33 +69,60 @@ public class APIClient {
 	/**
 	 * Rotate pane
 	 */
-	public void rotatePane() throws NetworkErrorException{
-		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+	public void rotatePane(){
+		final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("type", "widget"));
 		
-		this.call(METHOD_POST, URI_SWITCHER_ROTATE, params);
+		new Thread(new Runnable() {
+	        public void run() {
+	    		try {
+					call(METHOD_POST, URI_SWITCHER_ROTATE, params);
+				} catch (NetworkErrorException e) {
+					setChanged();
+					notifyObservers(e);
+				}
+	        }
+	    }).start();
 	}
 	
 	/**
 	 * Route call
 	 */
-	public void route(String from, String to) throws NetworkErrorException{
-		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+	public void route(String from, String to){
+		final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("from", from));
 		params.add(new BasicNameValuePair("to", to));
 		
-		this.call(METHOD_POST, URI_ROUTE_NMBS, params);
+		new Thread(new Runnable() {
+	        public void run() {
+	    		try {
+	    			call(METHOD_POST, URI_ROUTE_NMBS, params);
+				} catch (NetworkErrorException e) {
+					setChanged();
+					notifyObservers(e);
+				}
+	        }
+	    }).start();
 	}
 	
 	/**
 	 * Board call
 	 */
-	public void board(String type, String station) throws NetworkErrorException{
-		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+	public void board(String type, String station){
+		final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("type", type.toLowerCase()));
 		params.add(new BasicNameValuePair("station", station));
 		
-		this.call(METHOD_POST, URI_ROUTE_NMBS_BOARD, params);
+		new Thread(new Runnable() {
+	        public void run() {
+	    		try {
+	    			call(METHOD_POST, URI_ROUTE_NMBS_BOARD, params);
+				} catch (NetworkErrorException e) {
+					setChanged();
+					notifyObservers(e);
+				}
+	        }
+	    }).start();
 	}
 	
 	/**
@@ -112,7 +139,7 @@ public class APIClient {
 			}
 		}
 		if(!internet){
-			throw new NetworkErrorException();
+			throw new NetworkErrorException("No internet connection.");
 		}
 		
 		

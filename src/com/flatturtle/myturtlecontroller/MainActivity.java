@@ -97,7 +97,7 @@ public class MainActivity extends Activity implements Observer {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		// Go fullscreen
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 		// Select layout
 		setContentView(R.layout.activity_main);
@@ -158,6 +158,7 @@ public class MainActivity extends Activity implements Observer {
 
 		// Create APIClient with API URL from strings
 		api = new APIClient(getString(R.string.api), this);
+		api.addObserver(this);
 		this.authenticate();
 
 		paneSwitchHandler = new Handler();
@@ -168,15 +169,12 @@ public class MainActivity extends Activity implements Observer {
 			@Override
 			public void onClick(View v) {
 				Log.i("Panes", "Switch");
-				try {
-					api.rotatePane();
-					btnSwitchPane.setEnabled(false);
-					progressSwitch.setVisibility(View.VISIBLE);
-					paneSwitchHandler.removeCallbacks(donePaneSwitching);
-					paneSwitchHandler.postDelayed(donePaneSwitching, 1500);
-				} catch (NetworkErrorException e) {
-					noInternetAlert();
-				}
+
+				api.rotatePane();
+				btnSwitchPane.setEnabled(false);
+				progressSwitch.setVisibility(View.VISIBLE);
+				paneSwitchHandler.removeCallbacks(donePaneSwitching);
+				paneSwitchHandler.postDelayed(donePaneSwitching, 1500);
 			}
 		});
 
@@ -324,14 +322,10 @@ public class MainActivity extends Activity implements Observer {
 					alert.setPositiveButton("Ok", null);
 					alert.show();
 				} else {
-					try {
-						api.route(txtFrom.getText().toString(), txtTo.getText()
-								.toString());
-						viewRoute.setVisibility(View.INVISIBLE);
-						showPlanning();
-					} catch (NetworkErrorException e) {
-						noInternetAlert();
-					}
+					api.route(txtFrom.getText().toString(), txtTo.getText()
+							.toString());
+					viewRoute.setVisibility(View.INVISIBLE);
+					showPlanning();
 				}
 			}
 		});
@@ -348,14 +342,10 @@ public class MainActivity extends Activity implements Observer {
 					alert.setPositiveButton("Ok", null);
 					alert.show();
 				} else {
-					try {
-						api.board(lblStation.getText().toString(), txtStation
-								.getText().toString());
-						viewStation.setVisibility(View.INVISIBLE);
-						showPlanning();
-					} catch (NetworkErrorException e) {
-						noInternetAlert();
-					}
+					api.board(lblStation.getText().toString(), txtStation
+							.getText().toString());
+					viewStation.setVisibility(View.INVISIBLE);
+					showPlanning();
 				}
 			}
 		});
@@ -365,7 +355,7 @@ public class MainActivity extends Activity implements Observer {
 			@Override
 			public void onClick(View v) {
 				backToStartHandler.removeCallbacks(backToStartRunnable);
-				
+
 				viewPlanning.setVisibility(View.INVISIBLE);
 				viewRoute.setVisibility(View.INVISIBLE);
 				viewStation.setVisibility(View.INVISIBLE);
@@ -419,7 +409,7 @@ public class MainActivity extends Activity implements Observer {
 		// Delay back button
 		backToStartHandler.postDelayed(doubleClickRunnable, 600);
 		// Back to start after 20 seconds
-		backToStartHandler.postDelayed(backToStartRunnable, 20000);
+		backToStartHandler.postDelayed(backToStartRunnable, 25000);
 	}
 
 	/**
@@ -539,20 +529,21 @@ public class MainActivity extends Activity implements Observer {
 		viewStart.setVisibility(View.VISIBLE);
 	}
 
-	// There are three kinds of update messages sent from AutoUpdateApk (more
-	// may be added later):
-	// AUTOUPDATE_CHECKING, AUTOUPDATE_NO_UPDATE and AUTOUPDATE_GOT_UPDATE,
-	// which denote the start
-	// of update checking process, and two possible outcomes.
-	//
 	@Override
 	public void update(Observable observable, Object data) {
-		if (((String) data)
+		if (data instanceof NetworkErrorException) {
+			// Network error
+			getWindow().getDecorView().post(new Runnable() {
+				@Override
+				public void run() {
+					noInternetAlert();
+				}
+			});
+		} else if (((String) data)
 				.equalsIgnoreCase(AutoUpdateApk.AUTOUPDATE_GOT_UPDATE)) {
 			android.util.Log.i("AutoUpdateApkActivity",
 					"Have just received update!");
-		}
-		if (((String) data)
+		} else if (((String) data)
 				.equalsIgnoreCase(AutoUpdateApk.AUTOUPDATE_HAVE_UPDATE)) {
 			android.util.Log.i("AutoUpdateApkActivity",
 					"There's an update available!");
