@@ -43,6 +43,7 @@ import com.lazydroid.autoupdateapk.AutoUpdateApk;
 public class MainActivity extends Activity implements Observer {
 	private PendingIntent intent;
 	private View viewStart;
+	private View viewNMBS;
 	private View viewStation;
 	private View viewRoute;
 	private View viewPlanning;
@@ -86,7 +87,7 @@ public class MainActivity extends Activity implements Observer {
 
 	private APIClient api;
 
-	// declare updater class member here (or in the Application)
+	// AutoUpdateApk
 	private AutoUpdateApk aua;
 
 	@Override
@@ -117,15 +118,13 @@ public class MainActivity extends Activity implements Observer {
 
 		// Link necessary views
 		viewStart = findViewById(R.id.viewStart);
-		viewStart.setVisibility(View.VISIBLE);
+		viewNMBS = findViewById(R.id.viewNMBS);
 		viewStation = findViewById(R.id.viewStation);
-		viewStation.setVisibility(View.INVISIBLE);
 		viewRoute = findViewById(R.id.viewRoute);
-		viewRoute.setVisibility(View.INVISIBLE);
 		viewPlanning = findViewById(R.id.viewPlanning);
-		viewPlanning.setVisibility(View.INVISIBLE);
 		viewSettings = findViewById(R.id.viewSettings);
-		viewSettings.setVisibility(View.INVISIBLE);
+		
+		this.startScreen();
 
 		btnShowRoute = (RelativeLayout) findViewById(R.id.btnShowRoute);
 		btnShowDepartures = (RelativeLayout) findViewById(R.id.btnShowDepartures);
@@ -286,7 +285,7 @@ public class MainActivity extends Activity implements Observer {
 		btnShowRoute.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				viewStart.setVisibility(View.INVISIBLE);
+				hideViews();
 				viewRoute.setVisibility(View.VISIBLE);
 			}
 		});
@@ -294,7 +293,7 @@ public class MainActivity extends Activity implements Observer {
 			@Override
 			public void onClick(View v) {
 				lblStation.setText(R.string.departures);
-				viewStart.setVisibility(View.INVISIBLE);
+				hideViews();
 				viewStation.setVisibility(View.VISIBLE);
 			}
 		});
@@ -302,7 +301,7 @@ public class MainActivity extends Activity implements Observer {
 			@Override
 			public void onClick(View v) {
 				lblStation.setText(R.string.arrivals);
-				viewStart.setVisibility(View.INVISIBLE);
+				hideViews();
 				viewStation.setVisibility(View.VISIBLE);
 			}
 		});
@@ -324,7 +323,7 @@ public class MainActivity extends Activity implements Observer {
 				} else {
 					api.route(txtFrom.getText().toString(), txtTo.getText()
 							.toString());
-					viewRoute.setVisibility(View.INVISIBLE);
+					hideViews();
 					showPlanning();
 				}
 			}
@@ -344,7 +343,7 @@ public class MainActivity extends Activity implements Observer {
 				} else {
 					api.board(lblStation.getText().toString(), txtStation
 							.getText().toString());
-					viewStation.setVisibility(View.INVISIBLE);
+					hideViews();
 					showPlanning();
 				}
 			}
@@ -355,20 +354,34 @@ public class MainActivity extends Activity implements Observer {
 			@Override
 			public void onClick(View v) {
 				backToStartHandler.removeCallbacks(backToStartRunnable);
-
-				viewPlanning.setVisibility(View.INVISIBLE);
-				viewRoute.setVisibility(View.INVISIBLE);
-				viewStation.setVisibility(View.INVISIBLE);
-				viewStart.setVisibility(View.VISIBLE);
+				
+				startScreen();
 			}
 		};
 		btnBack.setOnClickListener(backToStartListener);
 		btnBackRoute.setOnClickListener(backToStartListener);
 		btnBackStation.setOnClickListener(backToStartListener);
 	}
+	
+	/**
+	 * Show first view and hide the others
+	 */
+	protected void startScreen(){
+		this.hideViews();
+		viewNMBS.setVisibility(View.VISIBLE);
+	}
+	
+	protected void hideViews(){
+		viewStart.setVisibility(View.INVISIBLE);
+		viewNMBS.setVisibility(View.INVISIBLE);
+		viewStation.setVisibility(View.INVISIBLE);
+		viewRoute.setVisibility(View.INVISIBLE);
+		viewPlanning.setVisibility(View.INVISIBLE);
+		viewSettings.setVisibility(View.INVISIBLE);
+	}
 
 	/**
-	 * Show alert if there is not internet connection
+	 * Show alert if there is no Internet connection
 	 */
 	public void noInternetAlert() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -507,10 +520,7 @@ public class MainActivity extends Activity implements Observer {
 	 */
 	public void showSettings() {
 		Log.i("View", "Show settings");
-		viewStart.setVisibility(View.INVISIBLE);
-		viewRoute.setVisibility(View.INVISIBLE);
-		viewStation.setVisibility(View.INVISIBLE);
-		viewPlanning.setVisibility(View.INVISIBLE);
+		this.hideViews();
 		viewSettings.setVisibility(View.VISIBLE);
 	}
 
@@ -523,12 +533,16 @@ public class MainActivity extends Activity implements Observer {
 		editor.putString(SETTING_PASSWORD, txtPass.getText().toString());
 		editor.commit();
 
+		// Authenticate to check settings
 		this.authenticate();
-
-		viewSettings.setVisibility(View.INVISIBLE);
-		viewStart.setVisibility(View.VISIBLE);
+		
+		// Back to the start screen
+		this.startScreen();
 	}
 
+	/**
+	 * Callback for AutoUpdateApk
+	 */
 	@Override
 	public void update(Observable observable, Object data) {
 		if (data instanceof NetworkErrorException) {

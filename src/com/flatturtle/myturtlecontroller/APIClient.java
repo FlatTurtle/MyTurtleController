@@ -1,3 +1,9 @@
+/**
+ * APIClient
+ * Handles API requests
+ * @author Michiel Vancoillie
+ */
+
 package com.flatturtle.myturtlecontroller;
 
 import java.io.IOException;
@@ -41,6 +47,7 @@ public class APIClient extends Observable {
 	private static final String URI_SWITCHER_ROTATE = "tablet/plugins/switcher/rotate";
 	private static final String URI_ROUTE_NMBS = "tablet/plugins/route/nmbs";
 	private static final String URI_ROUTE_NMBS_BOARD = "tablet/plugins/route/board";
+	private static final String URI_TAXI_SHOW = "tablet/plugins/taxi/show";
 	
 	@SuppressWarnings("unused")
 	private static final String METHOD_GET = "GET";
@@ -117,6 +124,22 @@ public class APIClient extends Observable {
 	        public void run() {
 	    		try {
 	    			call(METHOD_POST, URI_ROUTE_NMBS_BOARD, params);
+				} catch (NetworkErrorException e) {
+					setChanged();
+					notifyObservers(e);
+				}
+	        }
+	    }).start();
+	}
+	
+	/**
+	 * Show taxi turtle
+	 */
+	public void taxi(){	
+		new Thread(new Runnable() {
+	        public void run() {
+	    		try {
+	    			call(METHOD_POST, URI_TAXI_SHOW, null);
 				} catch (NetworkErrorException e) {
 					setChanged();
 					notifyObservers(e);

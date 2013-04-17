@@ -1,3 +1,9 @@
+/**
+ * DataAdapter
+ * Adapter for autocompletes
+ * @author Michiel Vancoillie
+ */
+
 package com.flatturtle.myturtlecontroller;
 
 import java.io.IOException;
