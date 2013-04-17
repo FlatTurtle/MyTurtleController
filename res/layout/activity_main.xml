@@ -1,8 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activityRoot"
+    android:id="@+id/btnBackToStart"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:visibility="visible"
     android:windowSoftInputMode="adjustResize"
     tools:context=".MainActivity" >
 
@@ -17,7 +18,7 @@
     <RelativeLayout
         android:id="@+id/containerHeader"
         android:layout_width="wrap_content"
-        android:layout_height="120dp" >
+        android:layout_height="80dp" >
 
         <View
             android:id="@+id/background_header"
@@ -31,7 +32,7 @@
             android:layout_height="fill_parent"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:padding="28dp" >
+            android:paddingRight="28dp" >
 
             <TextView
                 android:id="@+id/textView2"
@@ -45,10 +46,12 @@
 
             <ImageView
                 android:id="@+id/imageView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_gravity="center_vertical"
-                android:src="@android:drawable/ic_media_play" />
+                android:scaleType="fitCenter"
+                android:src="@drawable/icon_next" />
+
         </LinearLayout>
 
         <ProgressBar
@@ -57,26 +60,96 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
             android:layout_toLeftOf="@+id/btnSwitchPane"
             android:indeterminate="true" />
+
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginLeft="26dp"
+            android:layout_marginTop="12dp"
+            android:scaleType="fitStart"
+            android:src="@drawable/logo_320_2x"
+            tools:ignore="ContentDescription" />
+
     </RelativeLayout>
 
-    <ImageView
-        android:id="@+id/logo"
+    <RelativeLayout
+        android:id="@+id/containerNav"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="26dp"
-        android:layout_marginTop="16dp"
-        android:src="@drawable/logo_320_2x"
-        tools:ignore="ContentDescription" />
+        android:layout_height="50dp"
+        android:layout_below="@id/containerHeader"
+        android:visibility="visible" >
+
+        <View
+            android:id="@+id/View01"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#2257a6" />
+
+        <RelativeLayout
+            android:id="@+id/containerNavItems"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:layout_marginLeft="26dp"
+                android:layout_marginTop="13dp"
+                android:scaleType="fitStart"
+                android:src="@drawable/icon_home" />
+
+            <TextView
+                android:id="@+id/lblNavWhere"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="28dp"
+                android:gravity="center_vertical"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#fff" />
+
+            <TextView
+                android:id="@+id/TextView23"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginLeft="60dp"
+                android:gravity="center_vertical"
+                android:text="@string/back_to_start"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#fff" />
+
+            <TextView
+                android:id="@+id/TextView24"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@id/lblNavWhere"
+                android:gravity="center_vertical"
+                android:text="@string/you_are_here"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#fff" />
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btnHome"
+        android:layout_width="200dp"
+        android:layout_height="130dp"
+        android:background="@android:color/transparent" />
 
     <HorizontalScrollView
         android:id="@+id/viewStart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/containerHeader" >
+        android:layout_below="@id/containerNav"
+        android:visibility="visible" >
 
         <RelativeLayout
             android:id="@+id/RelativeLayout04"
@@ -212,7 +285,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@id/containerHeader"
+        android:layout_below="@id/containerNav"
         android:visibility="invisible" >
 
         <RelativeLayout
@@ -334,7 +407,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/containerHeader"
+        android:layout_below="@id/containerNav"
         android:fadingEdge="horizontal|vertical"
         android:paddingTop="26dp"
         android:scrollbars="vertical"
@@ -530,7 +603,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@id/containerHeader"
+        android:layout_below="@id/containerNav"
         android:visibility="invisible" >
 
         <TableLayout
@@ -538,7 +611,7 @@
             android:layout_height="match_parent"
             android:paddingLeft="26dp"
             android:paddingRight="26dp"
-            android:paddingTop="60dp" >
+            android:paddingTop="20dp" >
 
             <TableRow
                 android:id="@+id/tableRow4"
@@ -670,6 +743,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
+                android:layout_marginTop="30dp"
                 android:gravity="right" >
 
                 <RelativeLayout
@@ -744,7 +818,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="false"
-        android:layout_below="@id/containerHeader"
+        android:layout_below="@id/containerNav"
         android:fadingEdge="horizontal|vertical"
         android:paddingTop="26dp"
         android:scrollbars="vertical"
@@ -812,7 +886,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="false"
-        android:layout_below="@id/containerHeader"
+        android:layout_below="@id/containerNav"
         android:fadingEdge="horizontal|vertical"
         android:paddingTop="26dp"
         android:scrollbars="vertical"

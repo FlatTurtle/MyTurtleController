@@ -6,6 +6,8 @@
     <string name="app_name">MyTurtleController</string>
     
     <string name="btn_next_pane">Switch to the next pane on the screen</string>   
+    <string name="back_to_start">Back to start</string>
+    <string name="you_are_here">You are here:</string>
     <string name="from">From</string>
     <string name="to">To</string>
     <string name="go">Go</string>

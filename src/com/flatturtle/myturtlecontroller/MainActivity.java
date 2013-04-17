@@ -32,6 +32,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -48,6 +49,9 @@ public class MainActivity extends Activity implements Observer {
 	private View viewRoute;
 	private View viewPlanning;
 	private View viewSettings;
+	private RelativeLayout containerNavItems;
+	private Button btnHome;
+	private TextView lblNavWhere;
 	private RelativeLayout btnShowRoute;
 	private RelativeLayout btnShowDepartures;
 	private RelativeLayout btnShowArrivals;
@@ -123,6 +127,9 @@ public class MainActivity extends Activity implements Observer {
 		viewRoute = findViewById(R.id.viewRoute);
 		viewPlanning = findViewById(R.id.viewPlanning);
 		viewSettings = findViewById(R.id.viewSettings);
+		containerNavItems = (RelativeLayout) findViewById(R.id.containerNavItems);
+		btnHome = (Button) findViewById(R.id.btnHome);
+		lblNavWhere = (TextView) findViewById(R.id.lblNavWhere);
 		
 		this.startScreen();
 
@@ -260,6 +267,14 @@ public class MainActivity extends Activity implements Observer {
 		// Auto update apk
 		aua = new AutoUpdateApk(getApplicationContext());
 		aua.addObserver(this); // see the remark below, next to update() method
+		
+		// Home button
+		btnHome.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startScreen();
+			}
+		});
 
 		// Clear buttons
 		btnClearFrom.setOnClickListener(new View.OnClickListener() {
@@ -286,6 +301,7 @@ public class MainActivity extends Activity implements Observer {
 			@Override
 			public void onClick(View v) {
 				hideViews();
+				lblNavWhere.setText("NMBS/Route");
 				viewRoute.setVisibility(View.VISIBLE);
 			}
 		});
@@ -294,6 +310,7 @@ public class MainActivity extends Activity implements Observer {
 			public void onClick(View v) {
 				lblStation.setText(R.string.departures);
 				hideViews();
+				lblNavWhere.setText("NMBS/Departures");
 				viewStation.setVisibility(View.VISIBLE);
 			}
 		});
@@ -302,6 +319,7 @@ public class MainActivity extends Activity implements Observer {
 			public void onClick(View v) {
 				lblStation.setText(R.string.arrivals);
 				hideViews();
+				lblNavWhere.setText("NMBS/Arrivals");
 				viewStation.setVisibility(View.VISIBLE);
 			}
 		});
@@ -354,7 +372,6 @@ public class MainActivity extends Activity implements Observer {
 			@Override
 			public void onClick(View v) {
 				backToStartHandler.removeCallbacks(backToStartRunnable);
-				
 				startScreen();
 			}
 		};
@@ -368,10 +385,23 @@ public class MainActivity extends Activity implements Observer {
 	 */
 	protected void startScreen(){
 		this.hideViews();
+		
+		// Navbar settings
+		containerNavItems.setVisibility(View.INVISIBLE);
+		btnHome.setVisibility(Button.INVISIBLE);
+		btnHome.setEnabled(false);
+		
 		viewNMBS.setVisibility(View.VISIBLE);
 	}
 	
+	/**
+	 * Hide all views
+	 */
 	protected void hideViews(){
+		containerNavItems.setVisibility(View.VISIBLE);
+		btnHome.setVisibility(Button.VISIBLE);
+		btnHome.setEnabled(true);
+		
 		viewStart.setVisibility(View.INVISIBLE);
 		viewNMBS.setVisibility(View.INVISIBLE);
 		viewStation.setVisibility(View.INVISIBLE);
@@ -414,6 +444,7 @@ public class MainActivity extends Activity implements Observer {
 	 */
 	public void showPlanning() {
 		btnBack.setEnabled(false);
+		lblNavWhere.setText("Notification");
 		viewPlanning.setVisibility(View.VISIBLE);
 
 		backToStartHandler.removeCallbacks(doubleClickRunnable);
@@ -521,6 +552,7 @@ public class MainActivity extends Activity implements Observer {
 	public void showSettings() {
 		Log.i("View", "Show settings");
 		this.hideViews();
+		lblNavWhere.setText("Settings");
 		viewSettings.setVisibility(View.VISIBLE);
 	}
 
