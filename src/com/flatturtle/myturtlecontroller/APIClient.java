@@ -115,8 +115,9 @@ public class APIClient extends Observable {
 	/**
 	 * Board call
 	 */
-	public void board(String type, String station){
+	public void board(String type, String station, String route_type){
 		final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("route_type", route_type));
 		params.add(new BasicNameValuePair("type", type.toLowerCase()));
 		params.add(new BasicNameValuePair("station", station));
 		

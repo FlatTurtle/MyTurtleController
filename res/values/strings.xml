@@ -4,6 +4,7 @@
     <string name="api">https://s.flatturtle.com</string>
  
     <string name="app_name">MyTurtleController</string>
+    <string name="help_choose">Hi, how do you want to travel today?</string>   
     
     <string name="btn_next_pane">Switch to the next pane on the screen</string>   
     <string name="back_to_start">Back to start</string>
@@ -15,7 +16,7 @@
     <string name="route">Route</string>
     <string name="departures">Departures</string>
     <string name="arrivals">Arrivals</string>
-    <string name="title">NMBS — Plan your trip</string>
+    <string name="title">Plan your trip</string>
     <string name="planning">Planning your route on the screen...</string>
     <string name="nmbs">NMBS</string>
     <string name="delijn">De Lijn</string>

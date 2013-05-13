@@ -52,6 +52,9 @@ public class MainActivity extends Activity implements Observer {
 	private RelativeLayout containerNavItems;
 	private Button btnHome;
 	private TextView lblNavWhere;
+	private RelativeLayout btnNMBS;
+	private RelativeLayout btnDeLijn;
+	private RelativeLayout btnMIVB;
 	private RelativeLayout btnShowRoute;
 	private RelativeLayout btnShowDepartures;
 	private RelativeLayout btnShowArrivals;
@@ -90,6 +93,12 @@ public class MainActivity extends Activity implements Observer {
 	private OnKeyListener enterKeyListener;
 
 	private APIClient api;
+	
+	private DataAdapter AUTOCOMPLETE_NMBS;
+	private DataAdapter AUTOCOMPLETE_DELIJN;
+	private DataAdapter AUTOCOMPLETE_MIVB;
+	
+	private String route_type = "NMBS";
 
 	// AutoUpdateApk
 	private AutoUpdateApk aua;
@@ -130,8 +139,10 @@ public class MainActivity extends Activity implements Observer {
 		containerNavItems = (RelativeLayout) findViewById(R.id.containerNavItems);
 		btnHome = (Button) findViewById(R.id.btnHome);
 		lblNavWhere = (TextView) findViewById(R.id.lblNavWhere);
-		
-		this.startScreen();
+
+		btnNMBS = (RelativeLayout) findViewById(R.id.btnNMBS);
+		btnDeLijn = (RelativeLayout) findViewById(R.id.btnDeLijn);
+		btnMIVB = (RelativeLayout) findViewById(R.id.btnMIVB);
 
 		btnShowRoute = (RelativeLayout) findViewById(R.id.btnShowRoute);
 		btnShowDepartures = (RelativeLayout) findViewById(R.id.btnShowDepartures);
@@ -161,6 +172,8 @@ public class MainActivity extends Activity implements Observer {
 		settings = this.getSharedPreferences(PREFS_NAME, 0);
 		txtPin.setText(settings.getString(SETTING_PIN, ""));
 		txtPass.setText(settings.getString(SETTING_PASSWORD, "112233"));
+		
+		this.startScreen();
 
 		// Create APIClient with API URL from strings
 		api = new APIClient(getString(R.string.api), this);
@@ -169,6 +182,33 @@ public class MainActivity extends Activity implements Observer {
 
 		paneSwitchHandler = new Handler();
 		backToStartHandler = new Handler();
+		
+		// Start screen switching
+		btnNMBS.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				hideViews();
+				lblNavWhere.setText("NMBS");
+				viewNMBS.setVisibility(View.VISIBLE);
+			}
+		});
+		btnDeLijn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				hideViews();
+				lblNavWhere.setText("De Lijn");
+				viewStation.setVisibility(View.VISIBLE);
+			}
+		});
+		btnMIVB.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				hideViews();
+				lblNavWhere.setText("MIVB");
+				self.route_type = "MIVB";
+				viewStation.setVisibility(View.VISIBLE);
+			}
+		});
 
 		// Switch pane listener
 		btnSwitchPane.setOnClickListener(new View.OnClickListener() {
@@ -258,11 +298,14 @@ public class MainActivity extends Activity implements Observer {
 		txtPin.setOnKeyListener(enterKeyListener);
 		txtPass.setOnKeyListener(enterKeyListener);
 
+
 		// Autocomplete fields
-		final DataAdapter adapter = new DataAdapter(this, R.layout.list_item);
-		txtFrom.setAdapter(adapter);
-		txtTo.setAdapter(adapter);
-		txtStation.setAdapter(adapter);
+		self.AUTOCOMPLETE_NMBS = new DataAdapter(self, R.layout.list_item, "NMBS");
+		self.AUTOCOMPLETE_MIVB = new DataAdapter(self, R.layout.list_item, "MIVBSTIB");
+		txtStation.setAdapter(AUTOCOMPLETE_MIVB);
+		txtFrom.setAdapter(AUTOCOMPLETE_NMBS);
+		txtTo.setAdapter(AUTOCOMPLETE_NMBS);
+		
 
 		// Auto update apk
 		aua = new AutoUpdateApk(getApplicationContext());
@@ -360,7 +403,7 @@ public class MainActivity extends Activity implements Observer {
 					alert.show();
 				} else {
 					api.board(lblStation.getText().toString(), txtStation
-							.getText().toString());
+							.getText().toString(), self.route_type);
 					hideViews();
 					showPlanning();
 				}
@@ -386,12 +429,16 @@ public class MainActivity extends Activity implements Observer {
 	protected void startScreen(){
 		this.hideViews();
 		
+		// Reset fields
+		this.route_type = "NMBS";
+		txtStation.setText("");
+		
 		// Navbar settings
 		containerNavItems.setVisibility(View.INVISIBLE);
 		btnHome.setVisibility(Button.INVISIBLE);
 		btnHome.setEnabled(false);
 		
-		viewNMBS.setVisibility(View.VISIBLE);
+		viewStart.setVisibility(View.VISIBLE);
 	}
 	
 	/**

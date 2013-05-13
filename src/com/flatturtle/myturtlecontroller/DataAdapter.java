@@ -12,6 +12,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,23 +29,25 @@ public class DataAdapter extends ArrayAdapter<String> implements Filterable {
 	private ArrayList<String> resultList;
 	private static final String LOG_TAG = "Autocomplete";
 
-	private static final String PLACES_API_BASE = "http://data.irail.be/NMBS/Stations";
+	private static final String PLACES_API_BASE = "http://data.irail.be/";
 	private static final String OUT_JSON = ".json";
 
-	private JSONArray predsJsonArray;
+	private Object[] resultsArray;
 	private int numberOfCompletes = 0;
+	private String type = "NMBS";
 
-	public DataAdapter(Context context, int textViewResourceId) {
+	public DataAdapter(Context context, int textViewResourceId, String type) {
 		super(context, textViewResourceId);
 		
-		fetchData();
+		this.type = type;
+		fetchData(type);
 	}
 	
-	public void fetchData(){
+	public void fetchData(String type){
 		HttpURLConnection conn = null;
 		StringBuilder jsonResults = new StringBuilder();
 		try {
-			StringBuilder sb = new StringBuilder(PLACES_API_BASE + OUT_JSON);
+			StringBuilder sb = new StringBuilder(PLACES_API_BASE + type + "/Stations" + OUT_JSON);
 			// sb.append("&input=" + URLEncoder.encode(input, "utf8"));
 
 			URL url = new URL(sb.toString());
@@ -69,7 +73,19 @@ public class DataAdapter extends ArrayAdapter<String> implements Filterable {
 		try {
 			// Create a JSON object hierarchy from the results
 			JSONObject jsonObj = new JSONObject(jsonResults.toString());
-			predsJsonArray = jsonObj.getJSONArray("Stations");
+			JSONArray predsJsonArray = jsonObj.getJSONArray("Stations");
+			
+			Set<String> temp = new LinkedHashSet<String>();
+			  
+			if (predsJsonArray != null) { 
+			   int len = predsJsonArray.length();
+			   for (int i=0;i<len;i++){ 
+				   temp.add(predsJsonArray.getJSONObject(i).getString("name"));
+			   } 
+			}
+			Log.i("qsdf", "qsdfq" + temp.size());
+			resultsArray = temp.toArray();
+		
 		} catch (JSONException e) {
 			Log.e(LOG_TAG, "Cannot process JSON results", e);
 		}
@@ -95,9 +111,14 @@ public class DataAdapter extends ArrayAdapter<String> implements Filterable {
 					// Retrieve the autocomplete results.
 					resultList = autocomplete(constraint.toString());
 
-					// Assign the data to the FilterResults
-					filterResults.values = resultList;
-					filterResults.count = resultList.size();
+					if(resultList != null){
+						// Assign the data to the FilterResults
+						filterResults.values = resultList;
+						filterResults.count = resultList.size();
+					}else{
+						filterResults.values = null;
+						filterResults.count = 0;
+					}
 				}
 				return filterResults;
 			}
@@ -120,21 +141,20 @@ public class DataAdapter extends ArrayAdapter<String> implements Filterable {
 
 		try {
 			// Extract the station from the results
-			resultList = new ArrayList<String>(predsJsonArray.length());
-			for (int i = 0; i < predsJsonArray.length(); i++) {
-				String station = predsJsonArray.getJSONObject(i).getString(
-						"name");
+			resultList = new ArrayList<String>(resultsArray.length);
+			for (int i = 0; i < resultsArray.length; i++) {
+				String station = resultsArray[i].toString();
 				if (station.toLowerCase().contains(input.toLowerCase()))
 					resultList.add(station);
 			}
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			Log.e(LOG_TAG, "Cannot process JSON results", e);
 		}
 		
-		// Refetch data after 1000 autocompletes
+		// Refetch data after 10000 autocompletes
 		numberOfCompletes++;
-		if(numberOfCompletes % 1000 == 0)
-			fetchData();
+		if(numberOfCompletes % 10000 == 0)
+			fetchData(this.type);
 		return resultList;
 	}
 }

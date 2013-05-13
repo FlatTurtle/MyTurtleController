@@ -158,12 +158,25 @@
             android:layout_gravity="center"
             android:orientation="horizontal" >
 
+            <TextView
+                android:id="@+id/TextView21"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="15dp"
+                android:layout_weight="14"
+                android:text="@string/help_choose"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#aaa" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentRight="true"
                 android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
                 android:layout_margin="50dp"
                 android:weightSum="30" >
 
@@ -201,90 +214,83 @@
 
                 </RelativeLayout>
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                <RelativeLayout
+                    android:id="@+id/btnDeLijn"
+                    android:layout_width="230dp"
+                    android:layout_height="fill_parent"
                     android:layout_marginRight="30dp"
-                    android:orientation="vertical"
-                    android:weightSum="2" >
+                    android:layout_weight="0.9"
+                    android:clipChildren="true"
+                    android:visibility="gone" >
 
-                    <RelativeLayout
-                        android:id="@+id/btnDeLijn"
-                        android:layout_width="230dp"
+                    <View
+                        android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
+                        android:background="#0478bd"
+                        android:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/TextView22"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentLeft="false"
+                        android:layout_centerHorizontal="true"
                         android:layout_marginBottom="30dp"
-                        android:layout_weight="0.9"
-                        android:clipChildren="true" >
+                        android:text="@string/delijn"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="#fff"
+                        android:textSize="40sp" />
 
-                        <View
-                            android:layout_width="fill_parent"
-                            android:layout_height="fill_parent"
-                            android:background="#0478bd"
-                            android:visibility="visible" />
+                    <ImageView
+                        android:id="@+id/ImageView04"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/icon_public" />
 
-                        <TextView
-                            android:id="@+id/TextView22"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentBottom="true"
-                            android:layout_alignParentLeft="false"
-                            android:layout_centerHorizontal="true"
-                            android:layout_marginBottom="15dp"
-                            android:text="@string/delijn"
-                            android:textAppearance="?android:attr/textAppearanceLarge"
-                            android:textColor="#fff"
-                            android:textSize="40sp" />
+                </RelativeLayout>
 
-                        <ImageView
-                            android:id="@+id/ImageView04"
-                            android:layout_width="wrap_content"
-                            android:layout_height="80dp"
-                            android:layout_centerHorizontal="true"
-                            android:layout_marginTop="15dp"
-                            android:src="@drawable/icon_public" />
+                <RelativeLayout
+                    android:id="@+id/btnMIVB"
+                    android:layout_width="230dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1.1" >
 
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:id="@+id/btnMIVB"
-                        android:layout_width="230dp"
+                    <View
+                        android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
-                        android:layout_weight="1.1" >
+                        android:background="#0478bd" />
 
-                        <View
-                            android:layout_width="fill_parent"
-                            android:layout_height="fill_parent"
-                            android:background="#0478bd" />
+                    <TextView
+                        android:id="@+id/TextView19"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentLeft="false"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginBottom="30dp"
+                        android:text="@string/mivb"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="#fff"
+                        android:textSize="40sp" />
 
-                        <TextView
-                            android:id="@+id/TextView19"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentBottom="true"
-                            android:layout_alignParentLeft="false"
-                            android:layout_centerHorizontal="true"
-                            android:layout_marginBottom="15dp"
-                            android:text="@string/mivb"
-                            android:textAppearance="?android:attr/textAppearanceLarge"
-                            android:textColor="#fff"
-                            android:textSize="40sp" />
+                    <ImageView
+                        android:id="@+id/ImageView03"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/icon_public" />
 
-                        <ImageView
-                            android:id="@+id/ImageView03"
-                            android:layout_width="wrap_content"
-                            android:layout_height="80dp"
-                            android:layout_centerHorizontal="true"
-                            android:layout_marginTop="15dp"
-                            android:src="@drawable/icon_public" />
-
-                    </RelativeLayout>
-
-                </LinearLayout>
+                </RelativeLayout>
 
                 <RelativeLayout
                     android:id="@+id/btnTaxi"
                     android:layout_width="230dp"
-                    android:layout_height="fill_parent" >
+                    android:layout_height="fill_parent"
+                    android:visibility="gone" >
 
                     <View
                         android:layout_width="fill_parent"
@@ -312,7 +318,9 @@
                         android:src="@drawable/icon_car" />
 
                 </RelativeLayout>
+
             </LinearLayout>
+
         </RelativeLayout>
     </HorizontalScrollView>
 
