@@ -182,6 +182,15 @@ public class MainActivity extends Activity implements Observer {
 
 		paneSwitchHandler = new Handler();
 		backToStartHandler = new Handler();
+
+
+		// Autocomplete fields
+		self.AUTOCOMPLETE_NMBS = new DataAdapter(self, R.layout.list_item, "NMBS");
+		self.AUTOCOMPLETE_MIVB = new DataAdapter(self, R.layout.list_item, "MIVBSTIB");
+//		self.AUTOCOMPLETE_DELIJN = new DataAdapter(self, R.layout.list_item, "DeLijn");
+		txtStation.setAdapter(AUTOCOMPLETE_MIVB);
+		txtFrom.setAdapter(AUTOCOMPLETE_NMBS);
+		txtTo.setAdapter(AUTOCOMPLETE_NMBS);
 		
 		// Start screen switching
 		btnNMBS.setOnClickListener(new View.OnClickListener() {
@@ -190,6 +199,7 @@ public class MainActivity extends Activity implements Observer {
 				hideViews();
 				lblNavWhere.setText("NMBS");
 				viewNMBS.setVisibility(View.VISIBLE);
+				txtStation.setAdapter(AUTOCOMPLETE_NMBS);
 			}
 		});
 		btnDeLijn.setOnClickListener(new View.OnClickListener() {
@@ -198,6 +208,7 @@ public class MainActivity extends Activity implements Observer {
 				hideViews();
 				lblNavWhere.setText("De Lijn");
 				viewStation.setVisibility(View.VISIBLE);
+//				txtStation.setAdapter(AUTOCOMPLETE_DELIJN);
 			}
 		});
 		btnMIVB.setOnClickListener(new View.OnClickListener() {
@@ -207,6 +218,7 @@ public class MainActivity extends Activity implements Observer {
 				lblNavWhere.setText("MIVB");
 				self.route_type = "MIVB";
 				viewStation.setVisibility(View.VISIBLE);
+				txtStation.setAdapter(AUTOCOMPLETE_MIVB);
 			}
 		});
 
@@ -297,14 +309,6 @@ public class MainActivity extends Activity implements Observer {
 		txtStation.setOnKeyListener(enterKeyListener);
 		txtPin.setOnKeyListener(enterKeyListener);
 		txtPass.setOnKeyListener(enterKeyListener);
-
-
-		// Autocomplete fields
-		self.AUTOCOMPLETE_NMBS = new DataAdapter(self, R.layout.list_item, "NMBS");
-		self.AUTOCOMPLETE_MIVB = new DataAdapter(self, R.layout.list_item, "MIVBSTIB");
-		txtStation.setAdapter(AUTOCOMPLETE_MIVB);
-		txtFrom.setAdapter(AUTOCOMPLETE_NMBS);
-		txtTo.setAdapter(AUTOCOMPLETE_NMBS);
 		
 
 		// Auto update apk

@@ -22,6 +22,8 @@
     <string name="delijn">De Lijn</string>
     <string name="mivb">MIVB/STIB</string>
     <string name="taxi">Taxi</string>
+    
+    <string name="autocomplete_note">Type 3 characters to start autocomplete</string>
    
     
     <string name="settings">Settings</string>

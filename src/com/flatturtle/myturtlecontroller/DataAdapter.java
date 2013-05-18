@@ -137,24 +137,26 @@ public class DataAdapter extends ArrayAdapter<String> implements Filterable {
 	}
 
 	private ArrayList<String> autocomplete(String input) {
-		ArrayList<String> resultList = null;
+		ArrayList<String> resultList = new ArrayList<String>();
 
-		try {
-			// Extract the station from the results
-			resultList = new ArrayList<String>(resultsArray.length);
-			for (int i = 0; i < resultsArray.length; i++) {
-				String station = resultsArray[i].toString();
-				if (station.toLowerCase().contains(input.toLowerCase()))
-					resultList.add(station);
+		if(input.length() > 1){
+			try {
+				// Extract the station from the results
+				resultList = new ArrayList<String>(resultsArray.length);
+				for (int i = 0; i < resultsArray.length; i++) {
+					String station = resultsArray[i].toString();
+					if (station.toLowerCase().contains(input.toLowerCase()))
+						resultList.add(station);
+				}
+			} catch (Exception e) {
+				Log.e(LOG_TAG, "Cannot process JSON results", e);
 			}
-		} catch (Exception e) {
-			Log.e(LOG_TAG, "Cannot process JSON results", e);
+			
+			// Refetch data after 10000 autocompletes
+			numberOfCompletes++;
+			if(numberOfCompletes % 10000 == 0)
+				fetchData(this.type);
 		}
-		
-		// Refetch data after 10000 autocompletes
-		numberOfCompletes++;
-		if(numberOfCompletes % 10000 == 0)
-			fetchData(this.type);
 		return resultList;
 	}
 }
