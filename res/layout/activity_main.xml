@@ -215,44 +215,6 @@
                 </RelativeLayout>
 
                 <RelativeLayout
-                    android:id="@+id/btnDeLijn"
-                    android:layout_width="230dp"
-                    android:layout_height="fill_parent"
-                    android:layout_marginRight="30dp"
-                    android:layout_weight="0.9"
-                    android:clipChildren="true"
-                    android:visibility="gone" >
-
-                    <View
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:background="#0478bd"
-                        android:visibility="visible" />
-
-                    <TextView
-                        android:id="@+id/TextView22"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentLeft="false"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginBottom="30dp"
-                        android:text="@string/delijn"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textColor="#fff"
-                        android:textSize="40sp" />
-
-                    <ImageView
-                        android:id="@+id/ImageView04"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/icon_public" />
-
-                </RelativeLayout>
-
-                <RelativeLayout
                     android:id="@+id/btnMIVB"
                     android:layout_width="230dp"
                     android:layout_height="fill_parent"
@@ -284,6 +246,42 @@
                         android:layout_centerVertical="true"
                         android:src="@drawable/icon_public" />
 
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/btnDeLijn"
+                    android:layout_width="230dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="0.9"
+                    android:clipChildren="true"
+                    android:visibility="gone" >
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:background="#2357a5"
+                        android:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/TextView22"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentLeft="false"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginBottom="30dp"
+                        android:text="@string/delijn"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:textColor="#fff"
+                        android:textSize="40sp" />
+
+                    <ImageView
+                        android:id="@+id/ImageView04"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/icon_public" />
                 </RelativeLayout>
 
                 <RelativeLayout

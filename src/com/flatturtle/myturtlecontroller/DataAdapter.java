@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -47,11 +48,20 @@ public class DataAdapter extends ArrayAdapter<String> implements Filterable {
 		HttpURLConnection conn = null;
 		StringBuilder jsonResults = new StringBuilder();
 		try {
-			StringBuilder sb = new StringBuilder(PLACES_API_BASE + type + "/Stations" + OUT_JSON);
-			// sb.append("&input=" + URLEncoder.encode(input, "utf8"));
+			
+			StringBuilder sb;
+			if(type.equalsIgnoreCase("delijn")){
+				sb = new StringBuilder(PLACES_API_BASE + "spectql/DeLijn/Stations?in_radius(" + MainActivity.latitude + "," + MainActivity.longitude + ",1):json");
+			}else{
+				sb = new StringBuilder(PLACES_API_BASE + type + "/Stations" + OUT_JSON);
+			}
 
 			URL url = new URL(sb.toString());
+			Log.i("qsdf", url.toString());
 			conn = (HttpURLConnection) url.openConnection();
+			conn.setDoOutput(false);
+//			conn.setRequestProperty("HTTP_ACCEPT","application/json,text/html");  
+//			conn.setRequestProperty("Content-Type","application/json");  
 			InputStreamReader in = new InputStreamReader(conn.getInputStream());
 
 			// Load the results into a StringBuilder
@@ -64,6 +74,19 @@ public class DataAdapter extends ArrayAdapter<String> implements Filterable {
 			Log.e(LOG_TAG, "Error processing Stations API URL", e);
 		} catch (IOException e) {
 			Log.e(LOG_TAG, "Error connecting to Stations API", e);
+
+			// Echo the full error
+//			InputStreamReader in = new InputStreamReader(conn.getErrorStream());
+//			int read;
+//			char[] buff = new char[1024];
+//			try {
+//				while ((read = in.read(buff)) != -1) {
+//					jsonResults.append(buff, 0, read);
+//				}
+//			} catch (IOException e1) {
+//				e1.printStackTrace();
+//			}
+//			Log.i("Full error", jsonResults.toString());
 		} finally {
 			if (conn != null) {
 				conn.disconnect();
@@ -73,7 +96,13 @@ public class DataAdapter extends ArrayAdapter<String> implements Filterable {
 		try {
 			// Create a JSON object hierarchy from the results
 			JSONObject jsonObj = new JSONObject(jsonResults.toString());
-			JSONArray predsJsonArray = jsonObj.getJSONArray("Stations");
+
+			JSONArray predsJsonArray;
+			if(type.equalsIgnoreCase("delijn")){
+				predsJsonArray = jsonObj.getJSONArray("spectql");
+			}else{
+				predsJsonArray = jsonObj.getJSONArray("Stations");
+			}
 			
 			Set<String> temp = new LinkedHashSet<String>();
 			  
@@ -83,7 +112,6 @@ public class DataAdapter extends ArrayAdapter<String> implements Filterable {
 				   temp.add(predsJsonArray.getJSONObject(i).getString("name"));
 			   } 
 			}
-			Log.i("qsdf", "qsdfq" + temp.size());
 			resultsArray = temp.toArray();
 		
 		} catch (JSONException e) {

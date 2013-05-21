@@ -90,6 +90,9 @@ public class MainActivity extends Activity implements Observer {
 	public static final String PREFS_NAME = "MyTurtleController";
 	public static final String SETTING_PIN = "PIN";
 	public static final String SETTING_PASSWORD = "PASSWORD";
+	public static double latitude = 51.2;
+	public static double longitude = 4.3;
+			
 	private OnKeyListener enterKeyListener;
 
 	private APIClient api;
@@ -182,6 +185,13 @@ public class MainActivity extends Activity implements Observer {
 
 		paneSwitchHandler = new Handler();
 		backToStartHandler = new Handler();
+		
+		// Get screen information
+//		try {
+//			String screen_json = api.call("GET", "d", null);
+//		} catch (NetworkErrorException e) {
+//			
+//		}
 
 
 		// Autocomplete fields
@@ -207,6 +217,7 @@ public class MainActivity extends Activity implements Observer {
 			public void onClick(View v) {
 				hideViews();
 				lblNavWhere.setText("De Lijn");
+				self.route_type = "DeLijn";
 				viewStation.setVisibility(View.VISIBLE);
 //				txtStation.setAdapter(AUTOCOMPLETE_DELIJN);
 			}
@@ -502,9 +513,9 @@ public class MainActivity extends Activity implements Observer {
 		backToStartHandler.removeCallbacks(backToStartRunnable);
 
 		// Delay back button
-		backToStartHandler.postDelayed(doubleClickRunnable, 600);
+		backToStartHandler.postDelayed(doubleClickRunnable, 1000);
 		// Back to start after 20 seconds
-		backToStartHandler.postDelayed(backToStartRunnable, 25000);
+		backToStartHandler.postDelayed(backToStartRunnable, 30000);
 	}
 
 	/**

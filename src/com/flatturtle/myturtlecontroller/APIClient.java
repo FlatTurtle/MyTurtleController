@@ -7,6 +7,8 @@
 package com.flatturtle.myturtlecontroller;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Observable;
 
@@ -46,7 +48,7 @@ public class APIClient extends Observable {
 	private static final String URI_AUTH = "auth/mobile";
 	private static final String URI_SWITCHER_ROTATE = "tablet/plugins/switcher/rotate";
 	private static final String URI_ROUTE_NMBS = "tablet/plugins/route/nmbs";
-	private static final String URI_ROUTE_NMBS_BOARD = "tablet/plugins/route/board";
+	private static final String URI_ROUTE_BOARD = "tablet/plugins/route/board";
 	private static final String URI_TAXI_SHOW = "tablet/plugins/taxi/show";
 	
 	@SuppressWarnings("unused")
@@ -97,19 +99,23 @@ public class APIClient extends Observable {
 	 */
 	public void route(String from, String to){
 		final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("from", from));
-		params.add(new BasicNameValuePair("to", to));
-		
-		new Thread(new Runnable() {
-	        public void run() {
-	    		try {
-	    			call(METHOD_POST, URI_ROUTE_NMBS, params);
-				} catch (NetworkErrorException e) {
-					setChanged();
-					notifyObservers(e);
-				}
-	        }
-	    }).start();
+		try {
+			params.add(new BasicNameValuePair("from", URLEncoder.encode(from, "utf-8")));
+			params.add(new BasicNameValuePair("to", URLEncoder.encode(to, "utf-8")));
+			
+			new Thread(new Runnable() {
+		        public void run() {
+		    		try {
+		    			call(METHOD_POST, URI_ROUTE_NMBS, params);
+					} catch (NetworkErrorException e) {
+						setChanged();
+						notifyObservers(e);
+					}
+		        }
+		    }).start();
+		} catch (UnsupportedEncodingException e) {
+			
+		}
 	}
 	
 	/**
@@ -117,14 +123,14 @@ public class APIClient extends Observable {
 	 */
 	public void board(String type, String station, String route_type){
 		final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("route_type", route_type));
+		params.add(new BasicNameValuePair("route_type", route_type.toLowerCase()));
 		params.add(new BasicNameValuePair("type", type.toLowerCase()));
 		params.add(new BasicNameValuePair("station", station));
 		
 		new Thread(new Runnable() {
 	        public void run() {
 	    		try {
-	    			call(METHOD_POST, URI_ROUTE_NMBS_BOARD, params);
+	    			call(METHOD_POST, URI_ROUTE_BOARD, params);
 				} catch (NetworkErrorException e) {
 					setChanged();
 					notifyObservers(e);
