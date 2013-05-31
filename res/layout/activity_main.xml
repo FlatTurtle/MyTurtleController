@@ -149,7 +149,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/containerNav"
-        android:visibility="visible" >
+        android:visibility="invisible">
 
         <RelativeLayout
             android:id="@+id/RelativeLayout04"
@@ -218,7 +218,8 @@
                     android:id="@+id/btnMIVB"
                     android:layout_width="230dp"
                     android:layout_height="fill_parent"
-                    android:layout_weight="1.1" >
+                    android:layout_weight="1.1"
+                    android:layout_marginRight="30dp">
 
                     <View
                         android:layout_width="fill_parent"
@@ -254,7 +255,7 @@
                     android:layout_height="fill_parent"
                     android:layout_weight="0.9"
                     android:clipChildren="true"
-                    android:visibility="gone" >
+                    android:visibility="visible" >
 
                     <View
                         android:layout_width="fill_parent"
@@ -640,15 +641,11 @@
         </RelativeLayout>
     </ScrollView>
 
-    <ScrollView
-        android:id="@+id/viewSettings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/containerNav"
-        android:visibility="invisible" >
+    <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/viewSettings"
+            android:layout_below="@+id/containerNav">
 
         <TableLayout
             android:layout_width="match_parent"
@@ -784,23 +781,27 @@
 
             <TableRow
                 android:id="@+id/TableRow01"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:layout_marginTop="30dp"
-                android:gravity="right" >
+                android:layout_marginTop="0dp"
+                android:gravity="center">
 
                 <RelativeLayout
-                    android:layout_width="fill_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:layout_marginRight="0dp" >
+                    android:layout_marginRight="0dp"
+                    android:layout_gravity="left|right"
+                    android:gravity="fill_horizontal"
+                    android:layout_marginLeft="0dp">
 
                     <RelativeLayout
                         android:id="@+id/btnCheckUpdates"
                         android:layout_width="230dp"
                         android:layout_height="match_parent"
-                        android:gravity="center" >
+                        android:layout_centerVertical="true"
+                        android:gravity="center"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="30dp">
 
                         <View
                             android:layout_width="360dp"
@@ -824,11 +825,10 @@
                         android:id="@+id/btnExitToSettings"
                         android:layout_width="130dp"
                         android:layout_height="match_parent"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="840dp"
-                        android:layout_toRightOf="@id/btnCheckUpdates"
-                        android:gravity="center" >
+                        android:gravity="center"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="30dp">
 
                         <View
                             android:layout_width="360dp"
@@ -852,7 +852,7 @@
 
             </TableRow>
         </TableLayout>
-    </ScrollView>
+    </RelativeLayout>
 
     <ScrollView
         android:id="@+id/viewPlanning"
@@ -922,74 +922,26 @@
         </RelativeLayout>
     </ScrollView>
 
-    <ScrollView
+    <RelativeLayout
         android:id="@+id/viewStation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="false"
-        android:layout_below="@id/containerNav"
-        android:fadingEdge="horizontal|vertical"
-        android:paddingTop="26dp"
-        android:scrollbars="vertical"
-        android:visibility="invisible" >
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:paddingTop="103dp"
+        android:layout_below="@+id/containerNav"
+        android:visibility="invisible">
 
         <RelativeLayout
-            android:id="@+id/RelativeLayout01"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:paddingTop="103dp" >
-
-            <TextView
-                android:id="@+id/lblStation"
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:gravity="right"
-                android:text="@string/title"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="#2357a6"
-                android:textSize="35sp" />
-
-            <AutoCompleteTextView
-                android:id="@+id/txtStation"
-                android:layout_width="wrap_content"
-                android:layout_height="70dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentRight="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginLeft="220dp"
-                android:layout_marginRight="210dp"
-                android:layout_marginTop="60dp"
-                android:ems="10"
-                android:inputType="textCapWords"
-                android:textColor="#2357a6"
-                android:textColorHint="#2357a6"
-                android:textSize="26sp" />
-
-            <TextView
-                android:id="@+id/TextView12"
-                android:layout_width="170dp"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/txtStation"
-                android:layout_alignBottom="@+id/txtStation"
-                android:layout_marginLeft="30dp"
-                android:gravity="right"
-                android:text="@string/station"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="#2357a6"
-                android:textSize="26sp" />
+                android:layout_centerVertical="true">
 
             <RelativeLayout
                 android:id="@+id/btnClearStation"
                 android:layout_width="65dp"
                 android:layout_height="65dp"
                 android:layout_alignTop="@+id/txtStation"
-                android:layout_marginLeft="-220dp"
-                android:layout_toRightOf="@+id/txtStation" >
+                android:layout_alignRight="@+id/txtStation"
+                android:layout_marginRight="-95dp">
 
                 <View
                     android:layout_width="fill_parent"
@@ -999,29 +951,83 @@
                     android:id="@+id/TextView13"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
                     android:gravity="center"
                     android:paddingBottom="5dp"
-                    android:text="x"
+                    android:text="@string/clear"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="#aaa"
-                    android:textSize="40sp" />
+                    android:textSize="40sp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentRight="true"/>
             </RelativeLayout>
 
+            <TextView
+                android:id="@+id/TextView12"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:text="@string/station"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#2357a6"
+                android:textSize="26sp"
+                android:layout_alignLeft="@+id/txtStation"
+                android:layout_alignBaseline="@+id/txtStation"
+                android:layout_marginLeft="-230dp"/>
+
             <RelativeLayout
-                android:id="@+id/btnGoStation"
-                android:layout_width="130dp"
+                android:id="@+id/btnBackStation"
+                android:layout_width="100dp"
                 android:layout_height="150dp"
-                android:layout_alignParentRight="true"
-                android:layout_alignTop="@id/txtStation"
-                android:layout_marginRight="0dp"
-                android:layout_marginTop="-40dp" >
+                android:layout_alignParentLeft="true"
+                android:layout_alignTop="@+id/btnGoStation"
+                android:layout_alignBottom="@+id/btnGoStation">
 
                 <View
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:background="#2357a5" />
+                    android:background="#fff"
+                    android:layout_alignParentBottom="true"/>
+
+                <TextView
+                    android:id="@+id/TextView09"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/lt"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="#2357a6"
+                    android:textSize="70sp" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/lblStation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#2357a6"
+                android:textSize="35sp"
+                android:gravity="right"
+                android:layout_centerHorizontal="true"/>
+
+            <RelativeLayout
+                android:id="@+id/btnGoStation"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@+id/lblStation"
+                android:layout_marginRight="0dp"
+                android:layout_alignBottom="@+id/txtStation"
+                android:layout_alignParentBottom="false"
+                android:layout_marginBottom="-5dp">
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:background="#2357a5"
+                        />
 
                 <TextView
                     android:id="@+id/TextView11"
@@ -1036,31 +1042,34 @@
                     android:textSize="40sp" />
             </RelativeLayout>
 
-            <RelativeLayout
-                android:id="@+id/btnBackStation"
-                android:layout_width="100dp"
-                android:layout_height="150dp"
+            <AutoCompleteTextView
+                android:id="@+id/txtStation"
+                android:layout_width="wrap_content"
+                android:layout_height="70dp"
                 android:layout_alignParentLeft="true"
-                android:layout_alignTop="@id/btnGoStation" >
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="290dp"
+                android:layout_marginRight="280dp"
+                android:ems="10"
+                android:inputType="textCapWords"
+                android:textColor="#2357a6"
+                android:textColorHint="#2357a6"
+                android:textSize="26sp"
+                android:layout_alignParentEnd="false"
+                android:layout_alignParentStart="false"
+                android:layout_below="@+id/lblStation"
+                android:layout_marginTop="30dp"/>
 
-                <View
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:background="#fff" />
-
-                <TextView
-                    android:id="@+id/TextView09"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:text="&lt;"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="#2357a6"
-                    android:textSize="70sp" />
-            </RelativeLayout>
-
+            <TextView
+                    android:layout_width="62dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/btnToggleKeyboardStation"
+                    android:layout_alignRight="@+id/txtStation"
+                    android:layout_alignTop="@+id/lblStation"
+                    android:layout_alignBottom="@+id/lblStation"
+                    android:background="@drawable/icon_keyboard"/>
         </RelativeLayout>
-    </ScrollView>
+
+    </RelativeLayout>
 
 </RelativeLayout>

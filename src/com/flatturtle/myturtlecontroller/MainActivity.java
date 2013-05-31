@@ -5,12 +5,6 @@
 
 package com.flatturtle.myturtlecontroller;
 
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.Observable;
-import java.util.Observer;
-
-import com.flatturtle.myturtlecontroller.R;
-
 import android.accounts.NetworkErrorException;
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -41,6 +35,10 @@ import android.widget.TextView;
 
 import com.lazydroid.autoupdateapk.AutoUpdateApk;
 
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.Observable;
+import java.util.Observer;
+
 public class MainActivity extends Activity implements Observer {
 	private PendingIntent intent;
 	private View viewStart;
@@ -52,23 +50,24 @@ public class MainActivity extends Activity implements Observer {
 	private RelativeLayout containerNavItems;
 	private Button btnHome;
 	private TextView lblNavWhere;
-	private RelativeLayout btnNMBS;
-	private RelativeLayout btnDeLijn;
-	private RelativeLayout btnMIVB;
-	private RelativeLayout btnShowRoute;
-	private RelativeLayout btnShowDepartures;
-	private RelativeLayout btnShowArrivals;
-	private RelativeLayout btnClearFrom;
-	private RelativeLayout btnClearTo;
-	private RelativeLayout btnClearStation;
-	private RelativeLayout btnGoRoute;
-	private RelativeLayout btnGoStation;
-	private RelativeLayout btnBackRoute;
-	private RelativeLayout btnBackStation;
-	private RelativeLayout btnBack;
-	private RelativeLayout btnSaveSettings;
-	private RelativeLayout btnCheckUpdates;
-	private RelativeLayout btnExitToSettings;
+    protected RelativeLayout btnNMBS;
+    protected RelativeLayout btnDeLijn;
+    protected RelativeLayout btnMIVB;
+    protected TextView btnToggle;
+    protected RelativeLayout btnShowRoute;
+	protected RelativeLayout btnShowDepartures;
+    protected RelativeLayout btnShowArrivals;
+    protected RelativeLayout btnClearFrom;
+    protected RelativeLayout btnClearTo;
+    protected RelativeLayout btnClearStation;
+    protected RelativeLayout btnGoRoute;
+    protected RelativeLayout btnGoStation;
+    protected RelativeLayout btnBackRoute;
+    protected RelativeLayout btnBackStation;
+    protected RelativeLayout btnBack;
+    protected RelativeLayout btnSaveSettings;
+    protected RelativeLayout btnCheckUpdates;
+    protected RelativeLayout btnExitToSettings;
 	private LinearLayout btnSwitchPane;
 	private ProgressBar progressSwitch;
 
@@ -92,15 +91,15 @@ public class MainActivity extends Activity implements Observer {
 	public static final String SETTING_PASSWORD = "PASSWORD";
 	public static double latitude = 51.2;
 	public static double longitude = 4.3;
-			
-	private OnKeyListener enterKeyListener;
+
+    protected OnKeyListener enterKeyListener;
 
 	private APIClient api;
-	
-	private DataAdapter AUTOCOMPLETE_NMBS;
-	private DataAdapter AUTOCOMPLETE_DELIJN;
-	private DataAdapter AUTOCOMPLETE_MIVB;
-	
+
+    protected DataAdapter AUTOCOMPLETE_NMBS;
+    protected DataAdapter AUTOCOMPLETE_DELIJN;
+    protected DataAdapter AUTOCOMPLETE_MIVB;
+
 	private String route_type = "NMBS";
 
 	// AutoUpdateApk
@@ -110,6 +109,7 @@ public class MainActivity extends Activity implements Observer {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		final MainActivity self = this;
+
 		// Hide the title bar
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		// Go fullscreen
@@ -121,8 +121,7 @@ public class MainActivity extends Activity implements Observer {
 
 		// Restart application on crash
 		intent = PendingIntent.getActivity(this.getApplication()
-				.getBaseContext(), 0, new Intent(getIntent()), getIntent()
-				.getFlags());
+				.getBaseContext(), 0, new Intent(getIntent()), getIntent().getFlags());
 		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 			public void uncaughtException(Thread thread, Throwable ex) {
 				AlarmManager mgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -146,6 +145,8 @@ public class MainActivity extends Activity implements Observer {
 		btnNMBS = (RelativeLayout) findViewById(R.id.btnNMBS);
 		btnDeLijn = (RelativeLayout) findViewById(R.id.btnDeLijn);
 		btnMIVB = (RelativeLayout) findViewById(R.id.btnMIVB);
+
+        btnToggle = (TextView) findViewById(R.id.btnToggleKeyboardStation);
 
 		btnShowRoute = (RelativeLayout) findViewById(R.id.btnShowRoute);
 		btnShowDepartures = (RelativeLayout) findViewById(R.id.btnShowDepartures);
@@ -175,7 +176,7 @@ public class MainActivity extends Activity implements Observer {
 		settings = this.getSharedPreferences(PREFS_NAME, 0);
 		txtPin.setText(settings.getString(SETTING_PIN, ""));
 		txtPass.setText(settings.getString(SETTING_PASSWORD, "112233"));
-		
+
 		this.startScreen();
 
 		// Create APIClient with API URL from strings
@@ -185,7 +186,7 @@ public class MainActivity extends Activity implements Observer {
 
 		paneSwitchHandler = new Handler();
 		backToStartHandler = new Handler();
-		
+
 		// Get screen information
 //		try {
 //			String screen_json = api.call("GET", "d", null);
@@ -193,15 +194,24 @@ public class MainActivity extends Activity implements Observer {
 //			
 //		}
 
+        // Start screen switching
+        btnToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            InputMethodManager inputMgr = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMgr.toggleSoftInput(0, 0);
+            }
+        });
 
 		// Autocomplete fields
 		self.AUTOCOMPLETE_NMBS = new DataAdapter(self, R.layout.list_item, "NMBS");
 		self.AUTOCOMPLETE_MIVB = new DataAdapter(self, R.layout.list_item, "MIVBSTIB");
-//		self.AUTOCOMPLETE_DELIJN = new DataAdapter(self, R.layout.list_item, "DeLijn");
+		self.AUTOCOMPLETE_DELIJN = new DataAdapter(self, R.layout.list_item, "DeLijn");
 		txtStation.setAdapter(AUTOCOMPLETE_MIVB);
 		txtFrom.setAdapter(AUTOCOMPLETE_NMBS);
 		txtTo.setAdapter(AUTOCOMPLETE_NMBS);
-		
+
+
 		// Start screen switching
 		btnNMBS.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -219,7 +229,7 @@ public class MainActivity extends Activity implements Observer {
 				lblNavWhere.setText("De Lijn");
 				self.route_type = "DeLijn";
 				viewStation.setVisibility(View.VISIBLE);
-//				txtStation.setAdapter(AUTOCOMPLETE_DELIJN);
+				txtStation.setAdapter(AUTOCOMPLETE_DELIJN);
 			}
 		});
 		btnMIVB.setOnClickListener(new View.OnClickListener() {
@@ -299,8 +309,9 @@ public class MainActivity extends Activity implements Observer {
 		});
 
 		// Close keyboard on ENTER key for some fields
-		getWindow().setSoftInputMode(
-				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+		this.getWindow().setSoftInputMode(
+		    WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+        );
 		final InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		enterKeyListener = new OnKeyListener() {
 			@Override
@@ -320,12 +331,12 @@ public class MainActivity extends Activity implements Observer {
 		txtStation.setOnKeyListener(enterKeyListener);
 		txtPin.setOnKeyListener(enterKeyListener);
 		txtPass.setOnKeyListener(enterKeyListener);
-		
+
 
 		// Auto update apk
 		aua = new AutoUpdateApk(getApplicationContext());
 		aua.addObserver(this); // see the remark below, next to update() method
-		
+
 		// Home button
 		btnHome.setOnClickListener(new Button.OnClickListener() {
 			@Override
@@ -397,8 +408,7 @@ public class MainActivity extends Activity implements Observer {
 					alert.setPositiveButton("Ok", null);
 					alert.show();
 				} else {
-					api.route(txtFrom.getText().toString(), txtTo.getText()
-							.toString());
+					api.route(txtFrom.getText().toString(), txtTo.getText().toString());
 					hideViews();
 					showPlanning();
 				}
@@ -417,8 +427,7 @@ public class MainActivity extends Activity implements Observer {
 					alert.setPositiveButton("Ok", null);
 					alert.show();
 				} else {
-					api.board(lblStation.getText().toString(), txtStation
-							.getText().toString(), self.route_type);
+					api.board(lblStation.getText().toString(), txtStation.getText().toString(), self.route_type);
 					hideViews();
 					showPlanning();
 				}
@@ -437,25 +446,25 @@ public class MainActivity extends Activity implements Observer {
 		btnBackRoute.setOnClickListener(backToStartListener);
 		btnBackStation.setOnClickListener(backToStartListener);
 	}
-	
+
 	/**
 	 * Show first view and hide the others
 	 */
 	protected void startScreen(){
 		this.hideViews();
-		
+
 		// Reset fields
 		this.route_type = "NMBS";
 		txtStation.setText("");
-		
+
 		// Navbar settings
 		containerNavItems.setVisibility(View.INVISIBLE);
 		btnHome.setVisibility(Button.INVISIBLE);
 		btnHome.setEnabled(false);
-		
+
 		viewStart.setVisibility(View.VISIBLE);
 	}
-	
+
 	/**
 	 * Hide all views
 	 */
@@ -463,7 +472,7 @@ public class MainActivity extends Activity implements Observer {
 		containerNavItems.setVisibility(View.VISIBLE);
 		btnHome.setVisibility(Button.VISIBLE);
 		btnHome.setEnabled(true);
-		
+
 		viewStart.setVisibility(View.INVISIBLE);
 		viewNMBS.setVisibility(View.INVISIBLE);
 		viewStation.setVisibility(View.INVISIBLE);
@@ -487,8 +496,8 @@ public class MainActivity extends Activity implements Observer {
 	 * Authenticate with API
 	 */
 	public void authenticate() {
-		api.pin = txtPin.getText().toString();
 		try {
+            api.pin = txtPin.getText().toString();
 			if (!api.authenticate()) {
 				AlertDialog.Builder alert = new AlertDialog.Builder(this);
 				alert.setTitle("Authentication failed!");
@@ -629,7 +638,7 @@ public class MainActivity extends Activity implements Observer {
 
 		// Authenticate to check settings
 		this.authenticate();
-		
+
 		// Back to the start screen
 		this.startScreen();
 	}

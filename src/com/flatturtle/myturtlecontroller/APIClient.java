@@ -36,9 +36,9 @@ import android.net.NetworkInfo;
 import android.util.Log;
 
 public class APIClient extends Observable {
-	private HttpClient http;
-	private String API_URL;
-	private HttpResponse response;
+    protected HttpClient http;
+    protected HttpResponse response;
+    private String API_URL;
 	private String token;
 	private ConnectivityManager conMgr;
 	
@@ -72,7 +72,7 @@ public class APIClient extends Observable {
 		params.add(new BasicNameValuePair("pin", pin));
 		
 		String response = this.call(METHOD_POST, URI_AUTH, params);
-		return ((response != null && response.equals("true")) ? true : false);
+		return (response != null && response.equals("true"));
 	}
 	
 	/**
@@ -114,7 +114,7 @@ public class APIClient extends Observable {
 		        }
 		    }).start();
 		} catch (UnsupportedEncodingException e) {
-			
+		    Log.e("API/Route", "Can't post route");
 		}
 	}
 	
@@ -162,13 +162,15 @@ public class APIClient extends Observable {
 		// Check internet connection
 		NetworkInfo infos[] = conMgr.getAllNetworkInfo(); 
 		boolean internet = false;
-		for(NetworkInfo info : infos){
-			if (info.getState() == NetworkInfo.State.CONNECTED || info.getState() == NetworkInfo.State.CONNECTING) {
-				internet = true;
-				break;
-			}
-		}
-		if(!internet){
+        if (infos != null) {
+            for(NetworkInfo info : infos){
+                if (info.getState() == NetworkInfo.State.CONNECTED || info.getState() == NetworkInfo.State.CONNECTING) {
+                    internet = true;
+                    break;
+                }
+            }
+        }
+        if(!internet){
 			throw new NetworkErrorException("No internet connection.");
 		}
 		
@@ -178,17 +180,17 @@ public class APIClient extends Observable {
 		HttpRequestBase request;
 		
 		// Switch methods
-		if(method == METHOD_POST){
+		if(method.equals(METHOD_POST)){
 			request = new HttpPost(API_URL + '/' + uri);
-		}else if(method == METHOD_PUT){
+		}else if(method.equals(METHOD_PUT)){
 			request = new HttpPut(API_URL + '/' + uri);
-		}else if(method == METHOD_DELETE){
+		}else if(method.equals(METHOD_DELETE)){
 			request = new HttpDelete(API_URL + '/' + uri);
 		}else{
 			request = new HttpGet(API_URL + '/' + uri);
 		}
 
-		if (uri != URI_AUTH) {
+		if (!uri.equals(URI_AUTH)) {
 			if(token != null)
 				request.addHeader("Authorization", token);
 			else
@@ -205,7 +207,7 @@ public class APIClient extends Observable {
 
 			Log.i(request.getURI().toString(), statusCode + " - " + body);
 
-			if (uri == URI_AUTH) {
+			if (uri.equals(URI_AUTH)) {
 				token = null;
 
 				switch (statusCode) {

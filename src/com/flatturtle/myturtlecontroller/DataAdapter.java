@@ -6,25 +6,24 @@
 
 package com.flatturtle.myturtlecontroller;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Context;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class DataAdapter extends ArrayAdapter<String> implements Filterable {
 	private ArrayList<String> resultList;
@@ -51,7 +50,7 @@ public class DataAdapter extends ArrayAdapter<String> implements Filterable {
 			
 			StringBuilder sb;
 			if(type.equalsIgnoreCase("delijn")){
-				sb = new StringBuilder(PLACES_API_BASE + "spectql/DeLijn/Stations?in_radius(" + MainActivity.latitude + "," + MainActivity.longitude + ",1):json");
+				sb = new StringBuilder(PLACES_API_BASE + "spectql/DeLijn/Stations?in_radius(" + MainActivity.latitude + "," + MainActivity.longitude + ",10):json");
 			}else{
 				sb = new StringBuilder(PLACES_API_BASE + type + "/Stations" + OUT_JSON);
 			}
@@ -60,8 +59,8 @@ public class DataAdapter extends ArrayAdapter<String> implements Filterable {
 			Log.i("qsdf", url.toString());
 			conn = (HttpURLConnection) url.openConnection();
 			conn.setDoOutput(false);
-//			conn.setRequestProperty("HTTP_ACCEPT","application/json,text/html");  
-//			conn.setRequestProperty("Content-Type","application/json");  
+			conn.setRequestProperty("ACCEPT","application/json,text/html");
+			conn.setRequestProperty("Content-Type","application/json");
 			InputStreamReader in = new InputStreamReader(conn.getInputStream());
 
 			// Load the results into a StringBuilder
@@ -131,37 +130,36 @@ public class DataAdapter extends ArrayAdapter<String> implements Filterable {
 
 	@Override
 	public Filter getFilter() {
-		Filter filter = new Filter() {
-			@Override
-			protected FilterResults performFiltering(CharSequence constraint) {
-				FilterResults filterResults = new FilterResults();
-				if (constraint != null) {
-					// Retrieve the autocomplete results.
-					resultList = autocomplete(constraint.toString());
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                FilterResults filterResults = new FilterResults();
+                if (constraint != null) {
+                    // Retrieve the autocomplete results.
+                    resultList = autocomplete(constraint.toString());
 
-					if(resultList != null){
-						// Assign the data to the FilterResults
-						filterResults.values = resultList;
-						filterResults.count = resultList.size();
-					}else{
-						filterResults.values = null;
-						filterResults.count = 0;
-					}
-				}
-				return filterResults;
-			}
+                    if(resultList != null){
+                        // Assign the data to the FilterResults
+                        filterResults.values = resultList;
+                        filterResults.count = resultList.size();
+                    }else{
+                        filterResults.values = null;
+                        filterResults.count = 0;
+                    }
+                }
+                return filterResults;
+            }
 
-			@Override
-			protected void publishResults(CharSequence constraint,
-					FilterResults results) {
-				if (results != null && results.count > 0) {
-					notifyDataSetChanged();
-				} else {
-					notifyDataSetInvalidated();
-				}
-			}
-		};
-		return filter;
+            @Override
+            protected void publishResults(CharSequence constraint,
+                    FilterResults results) {
+                if (results != null && results.count > 0) {
+                    notifyDataSetChanged();
+                } else {
+                    notifyDataSetInvalidated();
+                }
+            }
+        };
 	}
 
 	private ArrayList<String> autocomplete(String input) {
@@ -171,11 +169,11 @@ public class DataAdapter extends ArrayAdapter<String> implements Filterable {
 			try {
 				// Extract the station from the results
 				resultList = new ArrayList<String>(resultsArray.length);
-				for (int i = 0; i < resultsArray.length; i++) {
-					String station = resultsArray[i].toString();
-					if (station.toLowerCase().contains(input.toLowerCase()))
-						resultList.add(station);
-				}
+                for (Object aResultsArray : resultsArray) {
+                    String station = aResultsArray.toString();
+                    if (station.toLowerCase().contains(input.toLowerCase()))
+                        resultList.add(station);
+                }
 			} catch (Exception e) {
 				Log.e(LOG_TAG, "Cannot process JSON results", e);
 			}

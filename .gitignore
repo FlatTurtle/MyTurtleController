@@ -1,4 +1,6 @@
 # built application files
+.idea
+MyTurtleController.iml
 passwords.xml
 *.settings
 *.apk

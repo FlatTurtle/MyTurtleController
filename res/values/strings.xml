@@ -2,15 +2,19 @@
 <resources>
     <!-- API location -->
     <string name="api">https://s.flatturtle.com</string>
- 
+
+    <string name="toggle">Toggle keyboard</string>
+
     <string name="app_name">MyTurtleController</string>
-    <string name="help_choose">Hi, how do you want to travel today?</string>   
-    
+    <string name="help_choose">Hi, how do you want to travel today?</string>
+
     <string name="btn_next_pane">Switch to the next pane on the screen</string>   
     <string name="back_to_start">Back to start</string>
     <string name="you_are_here">You are here:</string>
     <string name="from">From</string>
     <string name="to">To</string>
+    <string name="lt">&lt;</string>
+    <string name="clear">x</string>
     <string name="go">Go</string>
     <string name="station">Station</string>
     <string name="route">Route</string>
