@@ -6,11 +6,12 @@
 
 package com.flatturtle.myturtlecontroller;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Observable;
+import android.accounts.NetworkErrorException;
+import android.app.Activity;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.util.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -28,140 +29,139 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
-import android.accounts.NetworkErrorException;
-import android.app.Activity;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.util.Log;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Observable;
 
 public class APIClient extends Observable {
     protected HttpClient http;
     protected HttpResponse response;
     private String API_URL;
-	private String token;
-	private ConnectivityManager conMgr;
-	
-	public String pin;
+    private String token;
+    private ConnectivityManager conMgr;
 
-	private static final String TAG = "APICLient";
-	private static final String URI_AUTH = "auth/mobile";
-	private static final String URI_SWITCHER_ROTATE = "tablet/plugins/switcher/rotate";
-	private static final String URI_ROUTE_NMBS = "tablet/plugins/route/nmbs";
-	private static final String URI_ROUTE_BOARD = "tablet/plugins/route/board";
-	private static final String URI_TAXI_SHOW = "tablet/plugins/taxi/show";
-	
-	@SuppressWarnings("unused")
-	private static final String METHOD_GET = "GET";
-	private static final String METHOD_POST = "POST";
-	private static final String METHOD_PUT = "PUT";
-	private static final String METHOD_DELETE = "DELETE";
-	
+    public String pin;
 
-	public APIClient(String apiURL, Activity act) {
-		this.API_URL = apiURL;
+    private static final String TAG = "APICLient";
+    private static final String URI_AUTH = "auth/mobile";
+    private static final String URI_SWITCHER_ROTATE = "tablet/plugins/switcher/rotate";
+    private static final String URI_ROUTE_NMBS = "tablet/plugins/route/nmbs";
+    private static final String URI_ROUTE_BOARD = "tablet/plugins/route/board";
+    private static final String URI_TAXI_SHOW = "tablet/plugins/taxi/show";
 
-		conMgr = (ConnectivityManager) act.getSystemService(Context.CONNECTIVITY_SERVICE);
-	}
+    @SuppressWarnings("unused")
+    private static final String METHOD_GET = "GET";
+    private static final String METHOD_POST = "POST";
+    private static final String METHOD_PUT = "PUT";
+    private static final String METHOD_DELETE = "DELETE";
 
-	/**
-	 * Authenticate with API
-	 */
-	public Boolean authenticate() throws NetworkErrorException{
-		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("pin", pin));
-		
-		String response = this.call(METHOD_POST, URI_AUTH, params);
-		return (response != null && response.equals("true"));
-	}
-	
-	/**
-	 * Rotate pane
-	 */
-	public void rotatePane(){
-		final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("type", "widget"));
-		
-		new Thread(new Runnable() {
-	        public void run() {
-	    		try {
-					call(METHOD_POST, URI_SWITCHER_ROTATE, params);
-				} catch (NetworkErrorException e) {
-					setChanged();
-					notifyObservers(e);
-				}
-	        }
-	    }).start();
-	}
-	
-	/**
-	 * Route call
-	 */
-	public void route(String from, String to){
-		final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-		try {
-			params.add(new BasicNameValuePair("from", URLEncoder.encode(from, "utf-8")));
-			params.add(new BasicNameValuePair("to", URLEncoder.encode(to, "utf-8")));
-			
-			new Thread(new Runnable() {
-		        public void run() {
-		    		try {
-		    			call(METHOD_POST, URI_ROUTE_NMBS, params);
-					} catch (NetworkErrorException e) {
-						setChanged();
-						notifyObservers(e);
-					}
-		        }
-		    }).start();
-		} catch (UnsupportedEncodingException e) {
-		    Log.e("API/Route", "Can't post route");
-		}
-	}
-	
-	/**
-	 * Board call
-	 */
-	public void board(String type, String station, String route_type){
-		final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("route_type", route_type.toLowerCase()));
-		params.add(new BasicNameValuePair("type", type.toLowerCase()));
-		params.add(new BasicNameValuePair("station", station));
-		
-		new Thread(new Runnable() {
-	        public void run() {
-	    		try {
-	    			call(METHOD_POST, URI_ROUTE_BOARD, params);
-				} catch (NetworkErrorException e) {
-					setChanged();
-					notifyObservers(e);
-				}
-	        }
-	    }).start();
-	}
-	
-	/**
-	 * Show taxi turtle
-	 */
-	public void taxi(){	
-		new Thread(new Runnable() {
-	        public void run() {
-	    		try {
-	    			call(METHOD_POST, URI_TAXI_SHOW, null);
-				} catch (NetworkErrorException e) {
-					setChanged();
-					notifyObservers(e);
-				}
-	        }
-	    }).start();
-	}
-	
-	/**
-	 * General API call method
-	 */
-	public String call(String method, String uri, ArrayList<NameValuePair> params) throws NetworkErrorException{
-		// Check internet connection
-		NetworkInfo infos[] = conMgr.getAllNetworkInfo(); 
-		boolean internet = false;
+
+    public APIClient(String apiURL, Activity act) {
+        this.API_URL = apiURL;
+
+        conMgr = (ConnectivityManager) act.getSystemService(Context.CONNECTIVITY_SERVICE);
+    }
+
+    /**
+     * Authenticate with API
+     */
+    public Boolean authenticate() throws NetworkErrorException{
+        ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("pin", pin));
+
+        String response = this.call(METHOD_POST, URI_AUTH, params);
+        return (response != null && response.equals("true"));
+    }
+
+    /**
+     * Rotate pane
+     */
+    public void rotatePane(){
+        final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("type", "widget"));
+
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    call(METHOD_POST, URI_SWITCHER_ROTATE, params);
+                } catch (NetworkErrorException e) {
+                    setChanged();
+                    notifyObservers(e);
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * Route call
+     */
+    public void route(String from, String to){
+        final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+        try {
+            params.add(new BasicNameValuePair("from", URLEncoder.encode(from, "utf-8")));
+            params.add(new BasicNameValuePair("to", URLEncoder.encode(to, "utf-8")));
+
+            new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        call(METHOD_POST, URI_ROUTE_NMBS, params);
+                    } catch (NetworkErrorException e) {
+                        setChanged();
+                        notifyObservers(e);
+                    }
+                }
+            }).start();
+        } catch (UnsupportedEncodingException e) {
+            Log.e("API/Route", "Can't post route");
+        }
+    }
+
+    /**
+     * Board call
+     */
+    public void board(String type, String station, String route_type){
+        final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("route_type", route_type.toLowerCase()));
+        params.add(new BasicNameValuePair("type", type.toLowerCase()));
+        params.add(new BasicNameValuePair("station", station));
+
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    call(METHOD_POST, URI_ROUTE_BOARD, params);
+                } catch (NetworkErrorException e) {
+                    setChanged();
+                    notifyObservers(e);
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * Show taxi turtle
+     */
+    public void taxi(){
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    call(METHOD_POST, URI_TAXI_SHOW, null);
+                } catch (NetworkErrorException e) {
+                    setChanged();
+                    notifyObservers(e);
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * General API call method
+     */
+    public String call(String method, String uri, ArrayList<NameValuePair> params) throws NetworkErrorException{
+        // Check internet connection
+        NetworkInfo infos[] = conMgr.getAllNetworkInfo();
+        boolean internet = false;
         if (infos != null) {
             for(NetworkInfo info : infos){
                 if (info.getState() == NetworkInfo.State.CONNECTED || info.getState() == NetworkInfo.State.CONNECTING) {
@@ -171,83 +171,83 @@ public class APIClient extends Observable {
             }
         }
         if(!internet){
-			throw new NetworkErrorException("No internet connection.");
-		}
-		
-		
-		http = new DefaultHttpClient();
-		
-		HttpRequestBase request;
-		
-		// Switch methods
-		if(method.equals(METHOD_POST)){
-			request = new HttpPost(API_URL + '/' + uri);
-		}else if(method.equals(METHOD_PUT)){
-			request = new HttpPut(API_URL + '/' + uri);
-		}else if(method.equals(METHOD_DELETE)){
-			request = new HttpDelete(API_URL + '/' + uri);
-		}else{
-			request = new HttpGet(API_URL + '/' + uri);
-		}
+            throw new NetworkErrorException("No internet connection.");
+        }
 
-		if (!uri.equals(URI_AUTH)) {
-			if(token != null)
-				request.addHeader("Authorization", token);
-			else
-				this.authenticate();
-		}
-		
-		String body = null;
-		try {
-			if(params != null && request instanceof HttpPost)
-				((HttpPost) request).setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
-			response = http.execute(request);
-			int statusCode = response.getStatusLine().getStatusCode();
-			body = EntityUtils.toString(response.getEntity());
 
-			Log.i(request.getURI().toString(), statusCode + " - " + body);
+        http = new DefaultHttpClient();
 
-			if (uri.equals(URI_AUTH)) {
-				token = null;
+        HttpRequestBase request;
 
-				switch (statusCode) {
-				case 200:
-					// Get token
-					token = body.split("\"")[1];
-					Log.i(TAG, "Got token: " + token);
-					return "true";
-				case 403:
-					// Invalid PIN
-					return null;
-				default:
-					return null;
-				}
-			} else {
-				switch (statusCode) {
-				case 403:
-					if (token != null) {
-						// Invalid token
-						token = null;
-						authenticate();
-						call(method, uri, params);
-					}
-					break;
+        // Switch methods
+        if(method.equals(METHOD_POST)){
+            request = new HttpPost(API_URL + '/' + uri);
+        }else if(method.equals(METHOD_PUT)){
+            request = new HttpPut(API_URL + '/' + uri);
+        }else if(method.equals(METHOD_DELETE)){
+            request = new HttpDelete(API_URL + '/' + uri);
+        }else{
+            request = new HttpGet(API_URL + '/' + uri);
+        }
 
-				default:
-					break;
-				}
-			}
+        if (!uri.equals(URI_AUTH)) {
+            if(token != null)
+                request.addHeader("Authorization", token);
+            else
+                this.authenticate();
+        }
 
-			http.getConnectionManager().shutdown();
-		} catch (HttpResponseException e) {
-			Log.e(request.getURI().toString(),
-					e.getStatusCode() + " - " + e.getMessage());
-		} catch (ClientProtocolException e) {
-			Log.e(TAG, e.getMessage());
-		} catch (IOException e) {
-			Log.e(TAG, e.getMessage());
-		}
+        String body = null;
+        try {
+            if(params != null && request instanceof HttpPost)
+                ((HttpPost) request).setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+            response = http.execute(request);
+            int statusCode = response.getStatusLine().getStatusCode();
+            body = EntityUtils.toString(response.getEntity());
 
-		return body;
-	}
+            Log.i(request.getURI().toString(), statusCode + " - " + body);
+
+            if (uri.equals(URI_AUTH)) {
+                token = null;
+
+                switch (statusCode) {
+                    case 200:
+                        // Get token
+                        token = body.split("\"")[1];
+                        Log.i(TAG, "Got token: " + token);
+                        return "true";
+                    case 403:
+                        // Invalid PIN
+                        return null;
+                    default:
+                        return null;
+                }
+            } else {
+                switch (statusCode) {
+                    case 403:
+                        if (token != null) {
+                            // Invalid token
+                            token = null;
+                            authenticate();
+                            call(method, uri, params);
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            http.getConnectionManager().shutdown();
+        } catch (HttpResponseException e) {
+            Log.e(request.getURI().toString(),
+                    e.getStatusCode() + " - " + e.getMessage());
+        } catch (ClientProtocolException e) {
+            Log.e(TAG, e.getMessage());
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
+        }
+
+        return body;
+    }
 }

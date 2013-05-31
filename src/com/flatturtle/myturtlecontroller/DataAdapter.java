@@ -26,55 +26,55 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class DataAdapter extends ArrayAdapter<String> implements Filterable {
-	private ArrayList<String> resultList;
-	private static final String LOG_TAG = "Autocomplete";
+    private ArrayList<String> resultList;
+    private static final String LOG_TAG = "Autocomplete";
 
-	private static final String PLACES_API_BASE = "http://data.irail.be/";
-	private static final String OUT_JSON = ".json";
+    private static final String PLACES_API_BASE = "http://data.irail.be/";
+    private static final String OUT_JSON = ".json";
 
-	private Object[] resultsArray;
-	private int numberOfCompletes = 0;
-	private String type = "NMBS";
+    private Object[] resultsArray;
+    private int numberOfCompletes = 0;
+    private String type = "NMBS";
 
-	public DataAdapter(Context context, int textViewResourceId, String type) {
-		super(context, textViewResourceId);
-		
-		this.type = type;
-		fetchData(type);
-	}
-	
-	public void fetchData(String type){
-		HttpURLConnection conn = null;
-		StringBuilder jsonResults = new StringBuilder();
-		try {
-			
-			StringBuilder sb;
-			if(type.equalsIgnoreCase("delijn")){
-				sb = new StringBuilder(PLACES_API_BASE + "spectql/DeLijn/Stations?in_radius(" + MainActivity.latitude + "," + MainActivity.longitude + ",10):json");
-			}else{
-				sb = new StringBuilder(PLACES_API_BASE + type + "/Stations" + OUT_JSON);
-			}
+    public DataAdapter(Context context, int textViewResourceId, String type) {
+        super(context, textViewResourceId);
 
-			URL url = new URL(sb.toString());
-			Log.i("qsdf", url.toString());
-			conn = (HttpURLConnection) url.openConnection();
-			conn.setDoOutput(false);
-			conn.setRequestProperty("ACCEPT","application/json,text/html");
-			conn.setRequestProperty("Content-Type","application/json");
-			InputStreamReader in = new InputStreamReader(conn.getInputStream());
+        this.type = type;
+        fetchData(type);
+    }
 
-			// Load the results into a StringBuilder
-			int read;
-			char[] buff = new char[1024];
-			while ((read = in.read(buff)) != -1) {
-				jsonResults.append(buff, 0, read);
-			}
-		} catch (MalformedURLException e) {
-			Log.e(LOG_TAG, "Error processing Stations API URL", e);
-		} catch (IOException e) {
-			Log.e(LOG_TAG, "Error connecting to Stations API", e);
+    public void fetchData(String type){
+        HttpURLConnection conn = null;
+        StringBuilder jsonResults = new StringBuilder();
+        try {
 
-			// Echo the full error
+            StringBuilder sb;
+            if(type.equalsIgnoreCase("delijn")){
+                sb = new StringBuilder(PLACES_API_BASE + "spectql/DeLijn/Stations?in_radius(" + MainActivity.latitude + "," + MainActivity.longitude + ",10):json");
+            }else{
+                sb = new StringBuilder(PLACES_API_BASE + type + "/Stations" + OUT_JSON);
+            }
+
+            URL url = new URL(sb.toString());
+            Log.i("qsdf", url.toString());
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(false);
+            conn.setRequestProperty("ACCEPT","application/json,text/html");
+            conn.setRequestProperty("Content-Type","application/json");
+            InputStreamReader in = new InputStreamReader(conn.getInputStream());
+
+            // Load the results into a StringBuilder
+            int read;
+            char[] buff = new char[1024];
+            while ((read = in.read(buff)) != -1) {
+                jsonResults.append(buff, 0, read);
+            }
+        } catch (MalformedURLException e) {
+            Log.e(LOG_TAG, "Error processing Stations API URL", e);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Error connecting to Stations API", e);
+
+            // Echo the full error
 //			InputStreamReader in = new InputStreamReader(conn.getErrorStream());
 //			int read;
 //			char[] buff = new char[1024];
@@ -86,50 +86,50 @@ public class DataAdapter extends ArrayAdapter<String> implements Filterable {
 //				e1.printStackTrace();
 //			}
 //			Log.i("Full error", jsonResults.toString());
-		} finally {
-			if (conn != null) {
-				conn.disconnect();
-			}
-		}
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
 
-		try {
-			// Create a JSON object hierarchy from the results
-			JSONObject jsonObj = new JSONObject(jsonResults.toString());
+        try {
+            // Create a JSON object hierarchy from the results
+            JSONObject jsonObj = new JSONObject(jsonResults.toString());
 
-			JSONArray predsJsonArray;
-			if(type.equalsIgnoreCase("delijn")){
-				predsJsonArray = jsonObj.getJSONArray("spectql");
-			}else{
-				predsJsonArray = jsonObj.getJSONArray("Stations");
-			}
-			
-			Set<String> temp = new LinkedHashSet<String>();
-			  
-			if (predsJsonArray != null) { 
-			   int len = predsJsonArray.length();
-			   for (int i=0;i<len;i++){ 
-				   temp.add(predsJsonArray.getJSONObject(i).getString("name"));
-			   } 
-			}
-			resultsArray = temp.toArray();
-		
-		} catch (JSONException e) {
-			Log.e(LOG_TAG, "Cannot process JSON results", e);
-		}
-	}
+            JSONArray predsJsonArray;
+            if(type.equalsIgnoreCase("delijn")){
+                predsJsonArray = jsonObj.getJSONArray("spectql");
+            }else{
+                predsJsonArray = jsonObj.getJSONArray("Stations");
+            }
 
-	@Override
-	public int getCount() {
-		return resultList.size();
-	}
+            Set<String> temp = new LinkedHashSet<String>();
 
-	@Override
-	public String getItem(int index) {
-		return resultList.get(index);
-	}
+            if (predsJsonArray != null) {
+                int len = predsJsonArray.length();
+                for (int i=0;i<len;i++){
+                    temp.add(predsJsonArray.getJSONObject(i).getString("name"));
+                }
+            }
+            resultsArray = temp.toArray();
 
-	@Override
-	public Filter getFilter() {
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, "Cannot process JSON results", e);
+        }
+    }
+
+    @Override
+    public int getCount() {
+        return resultList.size();
+    }
+
+    @Override
+    public String getItem(int index) {
+        return resultList.get(index);
+    }
+
+    @Override
+    public Filter getFilter() {
         return new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
@@ -152,7 +152,7 @@ public class DataAdapter extends ArrayAdapter<String> implements Filterable {
 
             @Override
             protected void publishResults(CharSequence constraint,
-                    FilterResults results) {
+                                          FilterResults results) {
                 if (results != null && results.count > 0) {
                     notifyDataSetChanged();
                 } else {
@@ -160,29 +160,29 @@ public class DataAdapter extends ArrayAdapter<String> implements Filterable {
                 }
             }
         };
-	}
+    }
 
-	private ArrayList<String> autocomplete(String input) {
-		ArrayList<String> resultList = new ArrayList<String>();
+    private ArrayList<String> autocomplete(String input) {
+        ArrayList<String> resultList = new ArrayList<String>();
 
-		if(input.length() > 1){
-			try {
-				// Extract the station from the results
-				resultList = new ArrayList<String>(resultsArray.length);
+        if(input.length() > 1){
+            try {
+                // Extract the station from the results
+                resultList = new ArrayList<String>(resultsArray.length);
                 for (Object aResultsArray : resultsArray) {
                     String station = aResultsArray.toString();
                     if (station.toLowerCase().contains(input.toLowerCase()))
                         resultList.add(station);
                 }
-			} catch (Exception e) {
-				Log.e(LOG_TAG, "Cannot process JSON results", e);
-			}
-			
-			// Refetch data after 10000 autocompletes
-			numberOfCompletes++;
-			if(numberOfCompletes % 10000 == 0)
-				fetchData(this.type);
-		}
-		return resultList;
-	}
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Cannot process JSON results", e);
+            }
+
+            // Refetch data after 10000 autocompletes
+            numberOfCompletes++;
+            if(numberOfCompletes % 10000 == 0)
+                fetchData(this.type);
+        }
+        return resultList;
+    }
 }
