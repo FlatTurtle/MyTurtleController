@@ -56,7 +56,6 @@ public class DataAdapter extends ArrayAdapter<String> implements Filterable {
             }
 
             URL url = new URL(sb.toString());
-            Log.i("qsdf", url.toString());
             conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(false);
             conn.setRequestProperty("ACCEPT","application/json,text/html");

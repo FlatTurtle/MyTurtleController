@@ -35,7 +35,13 @@ import android.widget.TextView;
 
 import com.lazydroid.autoupdateapk.AutoUpdateApk;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -192,11 +198,26 @@ public class MainActivity extends Activity implements Observer {
         backToStartHandler = new Handler();
 
         // Get screen information
-//		try {
-//			String screen_json = api.call("GET", "d", null);
-//		} catch (NetworkErrorException e) {
-//			
-//		}
+		try {
+            ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+            params.add(new BasicNameValuePair("pin", api.pin));
+
+            String response = api.call("POST", "auth/alias", params);
+            String alias = response.split("\"")[1];
+
+			String screen_json = api.call("GET", alias + ".json", null);
+            JSONObject screen = new JSONObject(screen_json);
+            JSONObject screen_interface = screen.getJSONObject("interface");
+
+            float latitude = Float.parseFloat(screen_interface.getString("latitude"));
+            float longitude = Float.parseFloat(screen_interface.getString("longitude"));
+
+            if(longitude > 0 && latitude > 0){
+                MainActivity.longitude = longitude;
+                MainActivity.latitude = latitude;
+            }
+		} catch (NetworkErrorException e) {} catch (JSONException e) {
+        }
 
         // Soft keyboard toggle
         View.OnClickListener keyboardToggle = new View.OnClickListener() {
