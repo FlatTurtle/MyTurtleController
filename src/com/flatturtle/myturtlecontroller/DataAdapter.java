@@ -68,6 +68,7 @@ public class DataAdapter extends ArrayAdapter<String> implements Filterable {
             while ((read = in.read(buff)) != -1) {
                 jsonResults.append(buff, 0, read);
             }
+            in.close();
         } catch (MalformedURLException e) {
             Log.e(LOG_TAG, "Error processing Stations API URL", e);
         } catch (IOException e) {

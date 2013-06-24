@@ -41,6 +41,7 @@ public class APIClient extends Observable {
     private String API_URL;
     private String token;
     private ConnectivityManager conMgr;
+    private MainActivity act;
 
     public String pin;
 
@@ -58,8 +59,9 @@ public class APIClient extends Observable {
     private static final String METHOD_DELETE = "DELETE";
 
 
-    public APIClient(String apiURL, Activity act) {
+    public APIClient(String apiURL, MainActivity act) {
         this.API_URL = apiURL;
+        this.act = act;
 
         conMgr = (ConnectivityManager) act.getSystemService(Context.CONNECTIVITY_SERVICE);
     }
@@ -67,12 +69,22 @@ public class APIClient extends Observable {
     /**
      * Authenticate with API
      */
-    public Boolean authenticate() throws NetworkErrorException{
-        ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+    public void authenticate(){
+        final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("pin", pin));
 
-        String response = this.call(METHOD_POST, URI_AUTH, params);
-        return (response != null && response.equals("true"));
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    String response = call(METHOD_POST, URI_AUTH, params);
+                    act.authenticateResponse((response != null && response.equals("true")));
+                } catch (NetworkErrorException e) {
+                    setChanged();
+                    notifyObservers(e);
+                    act.noInternetAlert();
+                }
+            }
+        }).start();
     }
 
     /**
@@ -89,6 +101,7 @@ public class APIClient extends Observable {
                 } catch (NetworkErrorException e) {
                     setChanged();
                     notifyObservers(e);
+                    act.noInternetAlert();
                 }
             }
         }).start();
@@ -110,6 +123,7 @@ public class APIClient extends Observable {
                     } catch (NetworkErrorException e) {
                         setChanged();
                         notifyObservers(e);
+                        act.noInternetAlert();
                     }
                 }
             }).start();
@@ -134,6 +148,7 @@ public class APIClient extends Observable {
                 } catch (NetworkErrorException e) {
                     setChanged();
                     notifyObservers(e);
+                    act.noInternetAlert();
                 }
             }
         }).start();
@@ -150,6 +165,7 @@ public class APIClient extends Observable {
                 } catch (NetworkErrorException e) {
                     setChanged();
                     notifyObservers(e);
+                    act.noInternetAlert();
                 }
             }
         }).start();

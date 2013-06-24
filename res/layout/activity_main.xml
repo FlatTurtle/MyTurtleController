@@ -578,8 +578,6 @@
                 android:textColor="#2357a6"
                 android:textColorHint="#2357a6"
                 android:textSize="26sp"
-                android:layout_alignParentEnd="false"
-                android:layout_alignParentStart="false"
                 android:layout_below="@+id/lblStation"
                 android:layout_marginTop="30dp"/>
 

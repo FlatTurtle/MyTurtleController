@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.text.Editable;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -103,6 +104,7 @@ public class MainActivity extends Activity implements Observer {
     protected OnKeyListener enterKeyListener;
 
     private APIClient api;
+    private Boolean bootFase = true;
 
     protected DataAdapter AUTOCOMPLETE_NMBS;
     protected DataAdapter AUTOCOMPLETE_DELIJN;
@@ -120,12 +122,16 @@ public class MainActivity extends Activity implements Observer {
 
         // Hide the title bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        // Go fullscreen
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        // Fullscreen (> 4)
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        this.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
         // Select layout
         setContentView(R.layout.activity_main);
+
+        // Thread policy
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         // Restart application on crash
         intent = PendingIntent.getActivity(this.getApplication()
@@ -194,30 +200,10 @@ public class MainActivity extends Activity implements Observer {
         api.addObserver(this);
         this.authenticate();
 
+
         paneSwitchHandler = new Handler();
         backToStartHandler = new Handler();
 
-        // Get screen information
-		try {
-            ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("pin", api.pin));
-
-            String response = api.call("POST", "auth/alias", params);
-            String alias = response.split("\"")[1];
-
-			String screen_json = api.call("GET", alias + ".json", null);
-            JSONObject screen = new JSONObject(screen_json);
-            JSONObject screen_interface = screen.getJSONObject("interface");
-
-            float latitude = Float.parseFloat(screen_interface.getString("latitude"));
-            float longitude = Float.parseFloat(screen_interface.getString("longitude"));
-
-            if(longitude > 0 && latitude > 0){
-                MainActivity.longitude = longitude;
-                MainActivity.latitude = latitude;
-            }
-		} catch (NetworkErrorException e) {} catch (JSONException e) {
-        }
 
         // Soft keyboard toggle
         View.OnClickListener keyboardToggle = new View.OnClickListener() {
@@ -230,14 +216,6 @@ public class MainActivity extends Activity implements Observer {
         btnToggleKeyboardRoute.setOnClickListener(keyboardToggle);
         btnToggleKeyboardBoard.setOnClickListener(keyboardToggle);
         btnToggleKeyboardSettings.setOnClickListener(keyboardToggle);
-
-        // Autocomplete fields
-        self.AUTOCOMPLETE_NMBS = new DataAdapter(self, R.layout.list_item, "NMBS");
-        self.AUTOCOMPLETE_MIVB = new DataAdapter(self, R.layout.list_item, "MIVBSTIB");
-        self.AUTOCOMPLETE_DELIJN = new DataAdapter(self, R.layout.list_item, "DeLijn");
-        txtStation.setAdapter(AUTOCOMPLETE_MIVB);
-        txtFrom.setAdapter(AUTOCOMPLETE_NMBS);
-        txtTo.setAdapter(AUTOCOMPLETE_NMBS);
 
 
         // Start screen switching
@@ -521,20 +499,75 @@ public class MainActivity extends Activity implements Observer {
     }
 
     /**
+     * Load autocomplete data
+     */
+    public void loadAutocompletes() {
+
+        final MainActivity self = this;
+
+        // Autocomplete fields
+        new Thread(new Runnable() {
+            public void run() {
+                AUTOCOMPLETE_NMBS = new DataAdapter(self, R.layout.list_item, "NMBS");
+                AUTOCOMPLETE_MIVB = new DataAdapter(self, R.layout.list_item, "MIVBSTIB");
+                AUTOCOMPLETE_DELIJN = new DataAdapter(self, R.layout.list_item, "DeLijn");
+                // TODO: leak restore
+               /* txtStation.setAdapter(AUTOCOMPLETE_MIVB);
+                txtFrom.setAdapter(AUTOCOMPLETE_NMBS);
+                txtTo.setAdapter(AUTOCOMPLETE_NMBS);*/
+            }
+        }).start();
+    }
+
+    /**
      * Authenticate with API
      */
     public void authenticate() {
-        try {
-            api.pin = txtPin.getText().toString();
-            if (!api.authenticate()) {
-                AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                alert.setTitle("Authentication failed!");
-                alert.setMessage("No token received, is the PIN-code set/correct? Do you have internet connection?");
-                alert.setPositiveButton("Ok", null);
-                alert.show();
-            }
-        } catch (NetworkErrorException e) {
-            noInternetAlert();
+        api.pin = txtPin.getText().toString();
+        api.authenticate();
+    }
+
+    public void authenticateResponse(boolean res){
+        if (!res) {
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle("Authentication failed!");
+            alert.setMessage("No token received, is the PIN-code set/correct? Do you have internet connection?");
+            alert.setPositiveButton("Ok", null);
+            alert.show();
+        }
+
+        // Only load screen information on initial authentication
+        if(bootFase){
+            bootFase = false;
+
+            // Get screen information
+            new Thread(new Runnable() {
+                public void run() {
+                    try {
+                        ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+                        params.add(new BasicNameValuePair("pin", api.pin));
+
+                        String response = api.call("POST", "auth/alias", params);
+                        String alias = response.split("\"")[1];
+
+                        String screen_json = api.call("GET", alias + ".json", null);
+                        JSONObject screen = new JSONObject(screen_json);
+                        JSONObject screen_interface = screen.getJSONObject("interface");
+
+                        float latitude = Float.parseFloat(screen_interface.getString("latitude"));
+                        float longitude = Float.parseFloat(screen_interface.getString("longitude"));
+
+                        if(longitude > 0 && latitude > 0){
+                            MainActivity.longitude = longitude;
+                            MainActivity.latitude = latitude;
+                        }
+
+                        loadAutocompletes();
+                    } catch (NetworkErrorException e) {} catch (JSONException e) {
+                        noInternetAlert();
+                    }
+                }
+            }).start();
         }
     }
 
