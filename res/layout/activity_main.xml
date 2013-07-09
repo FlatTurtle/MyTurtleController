@@ -149,7 +149,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/containerNav"
-            >
+        android:visibility="gone">
 
         <RelativeLayout
             android:id="@+id/RelativeLayout04"
@@ -612,28 +612,7 @@
         android:layout_below="@id/containerNav"
         android:fadingEdge="horizontal|vertical"
         android:paddingTop="26dp"
-        android:visibility="gone">
-
-        <AutoCompleteTextView
-            android:id="@+id/txtTo"
-            android:layout_width="wrap_content"
-            android:layout_height="70dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/txtFrom"
-            android:layout_marginLeft="200dp"
-            android:layout_marginRight="210dp"
-            android:layout_marginTop="15dp"
-            android:ems="10"
-            android:inputType="textCapWords"
-            android:textColor="#2357a6"
-            android:textColorHint="#2357a6"
-            android:textSize="26sp"
-            android:background="#fff"
-            android:autoText="false">
-
-            <requestFocus />
-        </AutoCompleteTextView>
+        android:visibility="visible">
 
         <RelativeLayout
             android:id="@+id/btnClearTo"
@@ -777,6 +756,27 @@
             android:background="#fff"
             android:autoText="false"
             android:layout_alignTop="@+id/btnBackRoute"/>
+
+        <AutoCompleteTextView
+            android:id="@+id/txtTo"
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/txtFrom"
+            android:layout_marginLeft="200dp"
+            android:layout_marginRight="210dp"
+            android:layout_marginTop="15dp"
+            android:ems="10"
+            android:inputType="textCapWords"
+            android:textColor="#2357a6"
+            android:textColorHint="#2357a6"
+            android:textSize="26sp"
+            android:background="#fff"
+            android:autoText="false">
+
+            <requestFocus />
+        </AutoCompleteTextView>
 
         <RelativeLayout
             android:id="@+id/btnClearFrom"
