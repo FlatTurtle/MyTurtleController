@@ -34,8 +34,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.lazydroid.autoupdateapk.AutoUpdateApk;
-
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
@@ -75,7 +73,6 @@ public class MainActivity extends Activity implements Observer {
     protected RelativeLayout btnBackStation;
     protected RelativeLayout btnBack;
     protected RelativeLayout btnSaveSettings;
-    protected RelativeLayout btnCheckUpdates;
     protected RelativeLayout btnExitToSettings;
     private LinearLayout btnSwitchPane;
     private ProgressBar progressSwitch;
@@ -111,9 +108,6 @@ public class MainActivity extends Activity implements Observer {
     protected DataAdapter AUTOCOMPLETE_MIVB;
 
     private String route_type = "NMBS";
-
-    // AutoUpdateApk
-    private AutoUpdateApk aua;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,7 +172,6 @@ public class MainActivity extends Activity implements Observer {
         btnSwitchPane = (LinearLayout) findViewById(R.id.btnSwitchPane);
         btnBack = (RelativeLayout) findViewById(R.id.btnBack);
         btnSaveSettings = (RelativeLayout) findViewById(R.id.btnSaveSettings);
-        btnCheckUpdates = (RelativeLayout) findViewById(R.id.btnCheckUpdates);
         btnExitToSettings = (RelativeLayout) findViewById(R.id.btnExitToSettings);
         txtFrom = (AutoCompleteTextView) findViewById(R.id.txtFrom);
         txtTo = (AutoCompleteTextView) findViewById(R.id.txtTo);
@@ -291,21 +284,6 @@ public class MainActivity extends Activity implements Observer {
                 saveSettings();
             }
         });
-        btnCheckUpdates.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                btnCheckUpdates.setEnabled(false);
-                aua.checkUpdatesManually();
-                // Delay button
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        btnCheckUpdates.setEnabled(true);
-                    }
-                }, 60000);
-            }
-        });
         btnExitToSettings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -337,11 +315,6 @@ public class MainActivity extends Activity implements Observer {
         txtStation.setOnKeyListener(enterKeyListener);
         txtPin.setOnKeyListener(enterKeyListener);
         txtPass.setOnKeyListener(enterKeyListener);
-
-
-        // Auto update apk
-        aua = new AutoUpdateApk(getApplicationContext());
-        aua.addObserver(this); // see the remark below, next to update() method
 
         // Home button
         btnHome.setOnClickListener(new Button.OnClickListener() {
@@ -717,14 +690,6 @@ public class MainActivity extends Activity implements Observer {
                     noInternetAlert();
                 }
             });
-        } else if (((String) data)
-                .equalsIgnoreCase(AutoUpdateApk.AUTOUPDATE_GOT_UPDATE)) {
-            android.util.Log.i("AutoUpdateApkActivity",
-                    "Have just received update!");
-        } else if (((String) data)
-                .equalsIgnoreCase(AutoUpdateApk.AUTOUPDATE_HAVE_UPDATE)) {
-            android.util.Log.i("AutoUpdateApkActivity",
-                    "There's an update available!");
         }
     }
 }
