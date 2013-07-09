@@ -8,6 +8,9 @@
     <string name="app_name">MyTurtleController</string>
     <string name="help_choose">Hi, how do you want to travel today?</string>
 
+
+    <string name="help_nmbs">Do you want to search for a route or view a stations departures or arrivals?</string>
+
     <string name="btn_next_pane">Switch to the next pane on the screen</string>   
     <string name="back_to_start">Back to start</string>
     <string name="you_are_here">You are here:</string>
