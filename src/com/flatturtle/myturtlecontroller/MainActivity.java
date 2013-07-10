@@ -475,6 +475,7 @@ public class MainActivity extends Activity implements Observer {
      * Load autocomplete data
      */
     public void loadAutocompletes() {
+        Log.i("QSDFQSDFQSDFQSDFQDSFQSDf", "startauto");
 
         final MainActivity self = this;
 
@@ -490,6 +491,8 @@ public class MainActivity extends Activity implements Observer {
                 txtTo.setAdapter(AUTOCOMPLETE_NMBS);*/
             }
         }).start();
+
+        Log.i("QSDFQSDFQSDFQSDFQDSFQSDf", "auto");
     }
 
     /**
@@ -497,6 +500,7 @@ public class MainActivity extends Activity implements Observer {
      */
     public void authenticate() {
         api.pin = txtPin.getText().toString();
+        api.pin = "13979880";
         api.authenticate();
     }
 

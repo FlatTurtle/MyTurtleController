@@ -175,6 +175,8 @@ public class APIClient extends Observable {
      * General API call method
      */
     public String call(String method, String uri, ArrayList<NameValuePair> params) throws NetworkErrorException{
+
+        Log.i("QSDFQSDFQSDFQSDFQDSFQSDf", "startcall");
         // Check internet connection
         NetworkInfo infos[] = conMgr.getAllNetworkInfo();
         boolean internet = false;
@@ -256,6 +258,8 @@ public class APIClient extends Observable {
 
             http.getConnectionManager().shutdown();
         } catch (HttpResponseException e) {
+
+            Log.i("QSDFQSDFQSDFQSDFQDSFQSDf", "qsdf");
             Log.e(request.getURI().toString(),
                     e.getStatusCode() + " - " + e.getMessage());
         } catch (ClientProtocolException e) {
